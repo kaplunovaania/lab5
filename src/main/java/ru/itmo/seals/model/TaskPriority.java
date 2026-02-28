@@ -1,4 +1,4 @@
-package ru.itmo.seals.domain;
+package ru.itmo.seals.model;
 
 public enum TaskPriority {
     LOW, MEDIUM, HIGH
