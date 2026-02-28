@@ -6,7 +6,7 @@ import ru.itmo.seals.service.TaskCollectionManager;
 import java.time.Instant;
 import java.util.List;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
     TaskCollectionManager taskCollection = new TaskCollectionManager();
     long taskNextId = taskCollection.getTaskNextId();

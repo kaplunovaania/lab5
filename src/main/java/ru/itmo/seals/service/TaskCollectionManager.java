@@ -1,6 +1,8 @@
 package ru.itmo.seals.service;
 
 import ru.itmo.seals.model.Task;
+
+import java.time.Instant;
 import java.util.*;
 
 public class TaskCollectionManager {
@@ -19,4 +21,21 @@ public class TaskCollectionManager {
     public long getTaskNextId() {
         return System.currentTimeMillis() + taskCollection.size();
     }
+    public Task getById(long id) {
+        return taskCollection.get(id);
     }
+    public List<Task> getAll() {
+        return new ArrayList<>(taskCollection.values());
+    }
+
+    public boolean remove(long id) {
+        return taskCollection.remove(id) != null;
+    }
+    public void update(long id, String newText) {
+        Task task = getById(id);
+        if (task == null) throw new NoSuchElementException("Task with this id doesn't find");
+
+        task.setText(newText);
+        task.setUpdatedAt(Instant.now());
+    }
+}
