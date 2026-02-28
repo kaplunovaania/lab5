@@ -1,6 +1,6 @@
 package ru.itmo.seals.repositoy;
 
-import ru.itmo.seals.domain.Task;
+import ru.itmo.seals.model.Task;
 import java.time.ZonedDateTime;
 import java.util.TreeMap;
 
