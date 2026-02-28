@@ -119,7 +119,7 @@ public final class Task {
 
     @Override
     public String toString() {
-        return "Task{ " +
+        return "Task {" +
                 "id=" + id +
                 ", text='" + text + '\'' +
                 ", priority=" + priority +
