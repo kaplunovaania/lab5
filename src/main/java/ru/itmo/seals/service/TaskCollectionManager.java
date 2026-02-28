@@ -33,9 +33,9 @@ public class TaskCollectionManager {
     }
     public void update(long id, String newText) {
         Task task = getById(id);
-        if (task == null) throw new NoSuchElementException("Task with this id doesnt find");
+        if (task == null) throw new NoSuchElementException("Task with this id doesn't find");
 
-        task.setText(newText); // Валидатор сработает внутри Task
+        task.setText(newText);
         task.setUpdatedAt(Instant.now());
     }
 }
