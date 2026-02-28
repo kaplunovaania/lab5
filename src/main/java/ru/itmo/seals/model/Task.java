@@ -3,13 +3,10 @@ import java.time.Instant;
 import java.util.Objects;
 
 public final class Task {
-    // Уникальный номер задачи. Программа назначает сама.
     private final long id;
 // Текст задачи (что сделать). Нельзя пустое. До 25 символов.
     private String text;
-    // Приоритет задачи: LOW, MEDIUM или HIGH.
     private TaskPriority priority;
-    // Статус задачи: NEW, IN_PROGRESS или DONE.
     private TaskStatus status;
 // Дедлайн (до какого дня сделать). Можно null, если незадан.
     private Instant deadlineAt;
