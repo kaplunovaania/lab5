@@ -73,7 +73,7 @@ public final class Task {
     }
 
     public void setText(String text) {
-        if (!text.isEmpty() && text.length() <= 25 && text != null) {
+        if (text != null && !text.isEmpty() && text.length() <= 25) {
             this.text = text;
         } else {
             throw new IllegalArgumentException("Invalid text: " + text);
@@ -119,7 +119,7 @@ public final class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Task{ " +
                 "id=" + id +
                 ", text='" + text + '\'' +
                 ", priority=" + priority +
