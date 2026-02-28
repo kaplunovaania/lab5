@@ -31,6 +31,7 @@ public class TaskCollectionManager {
     public boolean remove(long id) {
         return taskCollection.remove(id) != null;
     }
+
     public void update(long id, String newText) {
         Task task = getById(id);
         if (task == null) throw new NoSuchElementException("Task with this id doesn't find");

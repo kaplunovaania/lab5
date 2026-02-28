@@ -1,8 +1,7 @@
 package ru.itmo.seals.model;
 import java.time.Instant;
-import java.util.Objects;
 
-public final class ChecklistItem {
+public final class Checklist {
     private final long id;
     // К какой задаче относится (id задачи).
 // Должен ссылаться на реально существующий Task.
@@ -16,7 +15,7 @@ public final class ChecklistItem {
     // Когда пункт обновляли (например, переключали done). Программа обновляет автоматически.
     private Instant updatedAt;
 
-    public ChecklistItem(long id, long taskId, String text, boolean done, Instant createdAt, Instant updatedAt) {
+    public Checklist(long id, long taskId, String text, boolean done, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.taskId = taskId;
         this.text = text;
