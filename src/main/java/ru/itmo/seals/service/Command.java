@@ -21,7 +21,6 @@ public class Command {
         this.checklistManager = checklistManager;
     }
 
-    // ==================== TASK COMMANDS ====================
 
     public void taskAdd(String text, String priorityStr, String deadlineStr, String ownerUsername) {
         try {
@@ -48,7 +47,7 @@ public class Command {
             System.out.println("Список задач пуст");
             return;
         }
-        System.out.println("ID  Priority  Status      Text");
+        System.out.println("ID                 Priority  Status      Text");
         for (Task task : tasks) {
             System.out.printf("%-2d %-9s %-11s %s%n",
                     task.getId(), task.getPriority(), task.getStatus(), task.getText());
@@ -191,20 +190,61 @@ public class Command {
         if (deadline == null) return "null";
         return LocalDate.ofInstant(deadline, ZoneOffset.UTC).toString();
     }
-    public void taskAddInteractive(Scanner scanner) {
-        System.out.print("Текст задачи: ");
-        String text = scanner.nextLine();
+    public void taskAddInteractive(Scanner scanner, String ownerUsername) {
+        System.out.println("=== Создание новой задачи ===");
 
-        System.out.print("Приоритет (LOW|MEDIUM|HIGH): ");
-        String priorityStr = scanner.nextLine();
+        // Текст задачи
+        String text = null;
+        while (text == null || text.isEmpty()) {
+            System.out.print("Текст задачи: ");
+            text = scanner.nextLine().trim();
+            if (text.isEmpty()) {
+                System.out.println("Ошибка: текст не может быть пустым");
+            }
+        }
 
-        System.out.print("Дедлайн (YYYY-MM-DD, можно пусто): ");
-        String deadlineStr = scanner.nextLine();
+        // Приоритет
+        TaskPriority priority = null;
+        while (priority == null) {
+            System.out.print("Приоритет (LOW|MEDIUM|HIGH): ");
+            String priorityStr = scanner.nextLine().trim().toUpperCase();
+            try {
+                priority = TaskPriority.valueOf(priorityStr);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Ошибка: неверный приоритет. Допустимые значения: LOW, MEDIUM, HIGH");
+            }
+        }
 
-        // Далее создаёте задачу как обычно
+        // Дедлайн
+        Instant deadline = null;
+        boolean deadlineSet = false;
+        while (!deadlineSet) {
+            System.out.print("Дедлайн (YYYY-MM-DD, оставьте пустым если нет): ");
+            String deadlineStr = scanner.nextLine().trim();
+            if (deadlineStr.isEmpty()) {
+                deadline = null;
+                deadlineSet = true;
+            } else {
+                try {
+                    LocalDate date = LocalDate.parse(deadlineStr);
+                    deadline = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+                    deadlineSet = true;
+                } catch (Exception e) {
+                    System.out.println("Ошибка: неверный формат даты. Используйте YYYY-MM-DD");
+                }
+            }
+        }
+
+        // Создание задачи
         try {
-            TaskPriority priority = TaskPriority.valueOf(priorityStr.toUpperCase());
-            // ... остальной код создания задачи
+            long id = taskManager.getTaskNextId();
+            Task task = new Task(
+                    id, text, priority, TaskStatus.NEW, deadline,
+                    null, ownerUsername != null ? ownerUsername : "SYSTEM",
+                    Instant.now(), Instant.now()
+            );
+            taskManager.addTask(task);
+            System.out.println("OK task_id=" + id);
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
         }

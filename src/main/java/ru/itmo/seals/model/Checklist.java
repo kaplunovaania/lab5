@@ -39,7 +39,6 @@ public final class Checklist {
         }
     }
 
-    // Геттеры
     public long getId() { return id; }
     public long getTaskId() { return taskId; }
     public String getText() { return text; }
@@ -47,7 +46,6 @@ public final class Checklist {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 
-    // Сеттеры
     public void setText(String text) {
         validateText(text);
             this.text = text;

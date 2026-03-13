@@ -36,7 +36,7 @@ public class Main {
             }
 
             try {
-                processCommand(input, handler, currentUsername);
+                processCommand(input, handler, currentUsername, scanner);
             } catch (Exception e) {
                 System.out.println("Ошибка: " + e.getMessage());
             }
@@ -44,20 +44,20 @@ public class Main {
         scanner.close();
     }
 
-    private static void processCommand(String input, Command handler, String currentUsername) {
+    private static void processCommand(String input, Command handler, String currentUsername, Scanner scanner) {
         String[] parts = input.split("\\s+", 10);
         String command = parts[0].toLowerCase();
 
         switch (command) {
             case "task_add" -> {
-                if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите текст задачи");
-                    return;
+                if (parts.length == 1) {
+                    handler.taskAddInteractive(scanner, currentUsername);
+                } else {
+                    String text = parts[1];
+                    String priority = parts.length > 2 ? parts[2] : "MEDIUM";
+                    String deadline = parts.length > 3 ? parts[3] : "";
+                    handler.taskAdd(text, priority, deadline, currentUsername);
                 }
-                String text = parts[1];
-                String priority = parts.length > 2 ? parts[2] : "MEDIUM";
-                String deadline = parts.length > 3 ? parts[3] : "";
-                handler.taskAdd(text, priority, deadline, currentUsername);
             }
             case "task_list" -> handler.taskList();
             case "task_show" -> {
@@ -65,63 +65,103 @@ public class Main {
                     System.out.println("Ошибка: укажите task_id");
                     return;
                 }
-                handler.taskShow(Long.parseLong(parts[1]));
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.taskShow(taskId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "task_update" -> {
                 if (parts.length < 4) {
                     System.out.println("Ошибка: task_update <id> <field>=<value>");
                     return;
                 }
-                long taskId = Long.parseLong(parts[1]);
-                String[] fieldVal = parts[2].split("=", 2);
-                if (fieldVal.length != 2) {
-                    System.out.println("Ошибка: формат field=value");
-                    return;
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    String[] fieldVal = parts[2].split("=", 2);
+                    if (fieldVal.length != 2) {
+                        System.out.println("Ошибка: формат field=value");
+                        return;
+                    }
+                    handler.taskUpdate(taskId, fieldVal[0], fieldVal[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
                 }
-                handler.taskUpdate(taskId, fieldVal[0], fieldVal[1]);
             }
             case "task_done" -> {
                 if (parts.length < 2) {
                     System.out.println("Ошибка: укажите task_id");
                     return;
                 }
-                handler.taskDone(Long.parseLong(parts[1]));
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.taskDone(taskId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "task_assign" -> {
                 if (parts.length < 3) {
                     System.out.println("Ошибка: task_assign <task_id> <username>");
                     return;
                 }
-                handler.taskAssign(Long.parseLong(parts[1]), parts[2]);
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.taskAssign(taskId, parts[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "task_delete" -> {
                 if (parts.length < 2) {
                     System.out.println("Ошибка: укажите task_id");
                     return;
                 }
-                handler.taskDelete(Long.parseLong(parts[1]));
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.taskDelete(taskId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "check_add" -> {
                 if (parts.length < 3) {
                     System.out.println("Ошибка: check_add <task_id> <text>");
                     return;
                 }
-                handler.checkAdd(Long.parseLong(parts[1]), parts[2]);
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.checkAdd(taskId, parts[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "check_list" -> {
                 if (parts.length < 2) {
                     System.out.println("Ошибка: укажите task_id");
                     return;
                 }
-                handler.checkList(Long.parseLong(parts[1]));
+                try {
+                    long taskId = Long.parseLong(parts[1]);
+                    handler.checkList(taskId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
             case "check_toggle" -> {
                 if (parts.length < 2) {
                     System.out.println("Ошибка: укажите item_id");
                     return;
                 }
-                handler.checkToggle(Long.parseLong(parts[1]));
+                try {
+                    long itemId = Long.parseLong(parts[1]);
+                    handler.checkToggle(itemId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ошибка: id должен быть числом");
+                }
             }
+
             default -> System.out.println("Ошибка: неизвестная команда '" + command + "'");
         }
     }
