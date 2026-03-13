@@ -22,8 +22,16 @@ public final class Checklist {
         validateText(text);
         this.text = text;
         this.done = false;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        if (createdAt != null) {
+            this.createdAt = createdAt;
+        } else {
+            this.createdAt = Instant.now();
+        }
+        if (updatedAt != null) {
+            this.updatedAt = createdAt;
+        } else {
+            this.updatedAt = Instant.now();
+        }
     }
     private void validateText(String text) {
         if (text == null || text.isEmpty() || text.length() > 25) {
@@ -41,13 +49,10 @@ public final class Checklist {
 
     // Сеттеры
     public void setText(String text) {
-        if (text != null && !text.isEmpty() && text.length() <= 25) {
+        validateText(text);
             this.text = text;
             this.updatedAt = Instant.now();  // ← Только это добавить!
-        } else {
-            throw new IllegalArgumentException("Invalid text: " + text);
         }
-    }
 
     public void setDone(boolean done) {
         this.done = done;
