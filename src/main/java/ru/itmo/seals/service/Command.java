@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Scanner;
 
 public class Command {
     private final TaskCollectionManager taskManager;
@@ -189,5 +190,23 @@ public class Command {
     private String formatDeadline(Instant deadline) {
         if (deadline == null) return "null";
         return LocalDate.ofInstant(deadline, ZoneOffset.UTC).toString();
+    }
+    public void taskAddInteractive(Scanner scanner) {
+        System.out.print("Текст задачи: ");
+        String text = scanner.nextLine();
+
+        System.out.print("Приоритет (LOW|MEDIUM|HIGH): ");
+        String priorityStr = scanner.nextLine();
+
+        System.out.print("Дедлайн (YYYY-MM-DD, можно пусто): ");
+        String deadlineStr = scanner.nextLine();
+
+        // Далее создаёте задачу как обычно
+        try {
+            TaskPriority priority = TaskPriority.valueOf(priorityStr.toUpperCase());
+            // ... остальной код создания задачи
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
     }
 }
