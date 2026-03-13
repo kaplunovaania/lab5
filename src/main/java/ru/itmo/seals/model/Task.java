@@ -19,21 +19,43 @@ public final class Task {
     // Когда обновляли. Программа обновляет автоматически.
     private Instant updatedAt;
 
-    public Task(long id, Instant createdAt, String text, TaskPriority priority, TaskStatus status, Instant deadlineAt, String assigneeUsername, String ownerUsername, Instant updatedAt) {
+    public Task(long id, String text, TaskPriority priority, TaskStatus status,
+                Instant deadlineAt, String assigneeUsername, String ownerUsername,
+                Instant createdAt, Instant updatedAt) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.setText(text);
+        validateText(text);
+        this.text = text;
+        validatePriority(priority);
         this.priority = priority;
+        validateStatus(status);
         this.status = status;
         this.deadlineAt = deadlineAt;
         this.assigneeUsername = assigneeUsername;
-        this.ownerUsername = ownerUsername;
+        this.ownerUsername = ownerUsername != null ? ownerUsername : "SYSTEM";
+        this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     public Task(long id, Instant createdAt) {
         this.id = id;
         this.createdAt = createdAt;
+    }
+    private void validateText(String text) {
+        if (text == null || text.isEmpty() || text.length() > 25) {
+            throw new IllegalArgumentException("Текст задачи не может быть пустым и должен быть до 25 символов");
+        }
+    }
+
+    private void validatePriority(TaskPriority priority) {
+        if (priority == null) {
+            throw new IllegalArgumentException("Приоритет не может быть null");
+        }
+    }
+
+    private void validateStatus(TaskStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Статус не может быть null");
+        }
     }
 
     public long getId() {
@@ -73,36 +95,36 @@ public final class Task {
     }
 
     public void setText(String text) {
-        if (text != null && !text.isEmpty() && text.length() <= 25) {
-            this.text = text;
-        } else {
-            throw new IllegalArgumentException("Invalid text: " + text);
-        }
-
+        validateText(text);
+        this.text = text;
+        this.updatedAt = Instant.now();
     }
 
     public void setPriority(TaskPriority priority) {
+        validatePriority(priority);
         this.priority = priority;
+        this.updatedAt = Instant.now();
     }
 
     public void setStatus(TaskStatus status) {
+        validateStatus(status);
         this.status = status;
+        this.updatedAt = Instant.now();
     }
 
     public void setDeadlineAt(Instant deadlineAt) {
         this.deadlineAt = deadlineAt;
+        this.updatedAt = Instant.now();
     }
 
     public void setAssigneeUsername(String assigneeUsername) {
         this.assigneeUsername = assigneeUsername;
+        this.updatedAt = Instant.now();
     }
 
     public void setOwnerUsername(String ownerUsername) {
         this.ownerUsername = ownerUsername;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
+        this.updatedAt = Instant.now();
     }
 
     @Override
