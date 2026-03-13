@@ -48,4 +48,14 @@ public class ChecklistCollectionManager {
 
         checklist.setText(newChecklist);
     }
+
+    public List<Checklist> getByTaskId(long taskId) {
+        List<Checklist> result = new ArrayList<>();
+        for (Checklist item : checklistCollection.values()) {
+            if (item.getTaskId() == taskId) {
+                result.add(item);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
 }

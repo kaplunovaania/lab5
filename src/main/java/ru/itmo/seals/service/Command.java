@@ -136,7 +136,7 @@ public class Command {
         }
         try {
             long id = checklistManager.getChecklistNextId();
-            Checklist item = new Checklist(id, taskId, text);
+            Checklist item = new Checklist(id, taskId, text, false, Instant.now(), Instant.now());
             checklistManager.addChecklist(item);
             System.out.println("OK item_id=" + id);
         } catch (IllegalArgumentException e) {
