@@ -129,6 +129,7 @@ public final class Task {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id && Objects.equals(text, task.text) && priority == task.priority && status == task.status && Objects.equals(deadlineAt, task.deadlineAt) && Objects.equals(assigneeUsername, task.assigneeUsername) && Objects.equals(ownerUsername, task.ownerUsername) && Objects.equals(createdAt, task.createdAt) && Objects.equals(updatedAt, task.updatedAt);

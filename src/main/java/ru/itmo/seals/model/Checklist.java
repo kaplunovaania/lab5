@@ -1,5 +1,6 @@
 package ru.itmo.seals.model;
 import java.time.Instant;
+import java.util.Objects;
 
 public final class Checklist {
     private final long id;
@@ -11,65 +12,62 @@ public final class Checklist {
     // Выполнен ли пункт. true = выполнен.
     private boolean done;
     // Когда пункт создан. Программа ставит автоматически.
-    private Instant createdAt;
+    private final Instant createdAt;
     // Когда пункт обновляли (например, переключали done). Программа обновляет автоматически.
     private Instant updatedAt;
 
     public Checklist(long id, long taskId, String text, boolean done, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.taskId = taskId;
+        validateText(text);
         this.text = text;
-        this.done = done;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.done = false;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+    private void validateText(String text) {
+        if (text == null || text.isEmpty() || text.length() > 25) {
+            throw new IllegalArgumentException("Invalid text: " + text + "текст не должен превышать 25 символов");
+        }
     }
 
-    public long getId() {
-        return id;
-    }
+    // Геттеры
+    public long getId() { return id; }
+    public long getTaskId() { return taskId; }
+    public String getText() { return text; }
+    public boolean isDone() { return done; }
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 
-    public long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getText() {
-        return text;
-    }
-
+    // Сеттеры
     public void setText(String text) {
-        if (text != null && !text.isEmpty() && text.length() <= 256) {
+        if (text != null && !text.isEmpty() && text.length() <= 25) {
             this.text = text;
+            this.updatedAt = Instant.now();  // ← Только это добавить!
         } else {
             throw new IllegalArgumentException("Invalid text: " + text);
         }
-        this.text = text;
-    }
-
-    public boolean isDone() {
-        return done;
     }
 
     public void setDone(boolean done) {
         this.done = done;
+        this.updatedAt = Instant.now();
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
+        this.updatedAt = Instant.now();
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Checklist that = (Checklist) o;
+        return id == that.id;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
