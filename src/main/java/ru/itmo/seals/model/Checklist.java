@@ -63,18 +63,6 @@ public final class Checklist {
     }
 
     @Override
-    public String toString() {
-        return "Checklist{" +
-                "id=" + id +
-                ", taskId=" + taskId +
-                ", text='" + text + '\'' +
-                ", done=" + done +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -87,4 +75,15 @@ public final class Checklist {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "Checklist{" +
+                "id=" + id +
+                ", taskId=" + taskId +
+                ", text='" + text + '\'' +
+                ", done=" + done +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
