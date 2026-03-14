@@ -61,6 +61,19 @@ public final class Checklist {
         this.taskId = taskId;
         this.updatedAt = Instant.now();
     }
+
+    @Override
+    public String toString() {
+        return "Checklist{" +
+                "id=" + id +
+                ", taskId=" + taskId +
+                ", text='" + text + '\'' +
+                ", done=" + done +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,4 +86,5 @@ public final class Checklist {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
