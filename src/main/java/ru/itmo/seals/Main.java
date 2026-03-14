@@ -1,13 +1,8 @@
 package ru.itmo.seals;
 
-import ru.itmo.seals.model.Task;
-import ru.itmo.seals.model.TaskPriority;
-import ru.itmo.seals.model.TaskStatus;
 import ru.itmo.seals.service.Command;
 import ru.itmo.seals.service.TaskCollectionManager;
 import ru.itmo.seals.service.ChecklistCollectionManager;
-
-import java.time.Instant;
 import java.util.Scanner;
 
 public class Main {
@@ -15,7 +10,6 @@ public class Main {
         TaskCollectionManager taskManager = new TaskCollectionManager();
         ChecklistCollectionManager checklistManager = new ChecklistCollectionManager();
         Command handler = new Command(taskManager, checklistManager);
-
         Scanner scanner = new Scanner(System.in);
         String currentUsername = "SYSTEM";
 
@@ -26,8 +20,8 @@ public class Main {
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) continue;
-            if (input.equals("exit") || input.equals("quit")) {
-                System.out.println("Выход...");
+            if (input.equals("exit")) {
+                System.out.println("Выход.");
                 break;
             }
             if (input.equals("help")) {
@@ -45,7 +39,7 @@ public class Main {
     }
 
     private static void processCommand(String input, Command handler, String currentUsername, Scanner scanner) {
-        String[] parts = input.split("\\s+", 10);
+        String[] parts = input.split("\\s+");
         String command = parts[0].toLowerCase();
 
         switch (command) {
@@ -53,9 +47,41 @@ public class Main {
                 if (parts.length == 1) {
                     handler.taskAddInteractive(scanner, currentUsername);
                 } else {
-                    String text = parts[1];
-                    String priority = parts.length > 2 ? parts[2] : "MEDIUM";
-                    String deadline = parts.length > 3 ? parts[3] : "";
+                    String priority = "MEDIUM";
+                    String deadline = "";
+
+                    boolean[] isParam = new boolean[parts.length];
+                    boolean foundPriority = false;
+                    boolean foundDeadline = false;
+
+                    for (int i = parts.length - 1; i >= 1; i--) {
+                        String part = parts[i];
+                        String partUpper = part.toUpperCase();
+
+                        if (!foundDeadline && part.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                            deadline = part;
+                            isParam[i] = true;
+                            foundDeadline = true;
+                        }
+                        else if (!foundPriority &&
+                                (partUpper.equals("LOW") || partUpper.equals("MEDIUM") || partUpper.equals("HIGH"))) {
+                            priority = partUpper;
+                            isParam[i] = true;
+                            foundPriority = true;
+                        }
+                    }
+
+                    StringBuilder textBuilder = new StringBuilder();
+                    for (int i = 1; i < parts.length; i++) {
+                        if (!isParam[i]) {
+                            if (textBuilder.length() > 0) {
+                                textBuilder.append(" ");
+                            }
+                            textBuilder.append(parts[i]);
+                        }
+                    }
+                    String text = textBuilder.toString();
+
                     handler.taskAdd(text, priority, deadline, currentUsername);
                 }
             }
@@ -179,7 +205,7 @@ public class Main {
               check_add <task_id> <text>                 - Добавить пункт чеклиста
               check_list <task_id>                       - Список пунктов чеклиста
               check_toggle <item_id>                     - Переключить пункт
-              exit / quit                                - Выход
+              exit                                       - Выход
               help                                       - Эта справка
             """);
     }

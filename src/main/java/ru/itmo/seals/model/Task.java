@@ -48,13 +48,13 @@ public final class Task {
 
     private void validatePriority(TaskPriority priority) {
         if (priority == null) {
-            throw new IllegalArgumentException("Приоритет не может быть null");
+            throw new IllegalArgumentException("Приоритет не может быть пустым");
         }
     }
 
     private void validateStatus(TaskStatus status) {
         if (status == null) {
-            throw new IllegalArgumentException("Статус не может быть null");
+            throw new IllegalArgumentException("Статус не может быть пустым");
         }
     }
 

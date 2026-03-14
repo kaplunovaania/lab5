@@ -9,14 +9,14 @@ public class TaskCollectionManager {
     public void addTask(Task task) {
         for (Task t : taskCollection.values()) {
             if (t.getId() == task.getId()) {
-                throw new IllegalArgumentException("Task with id " + task.getId() + " already exists");
+                throw new IllegalArgumentException("Задание с id " + task.getId() + " уже существует");
             }
         }
         taskCollection.put(task.getId(), task);
     }
 
     public long getTaskNextId() {
-        return System.currentTimeMillis() + taskCollection.size();
+        return taskCollection.size();
     }
 
     public List<Task> getTask() {
@@ -37,7 +37,7 @@ public class TaskCollectionManager {
 
     public void update(long id, String newText) {
         Task task = getById(id);
-        if (task == null) throw new NoSuchElementException("Task with this id doesn't find");
+        if (task == null) throw new NoSuchElementException("Нет задания с таким id");
         task.setText(newText);
     }
 }

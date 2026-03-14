@@ -9,14 +9,14 @@ public class ChecklistCollectionManager {
     public void addChecklist(Checklist checklist) {
         for (Checklist t : checklistCollection.values()) {
             if (t.getId() == checklist.getId()) {
-                throw new IllegalArgumentException("Checklist with id " + checklist.getId() + " already exists");
+                throw new IllegalArgumentException("Чеклист с id " + checklist.getId() + " уже существует");
             }
         }
         checklistCollection.put(checklist.getId(), checklist);
     }
 
     public long getChecklistNextId() {
-        return System.currentTimeMillis() + checklistCollection.size();
+        return checklistCollection.size();
     }
 
 
@@ -38,7 +38,7 @@ public class ChecklistCollectionManager {
 
     public void update(long id, String newChecklist) {
         Checklist checklist = getById(id);
-        if (checklist == null) throw new NoSuchElementException("Checklist with this id doesn't find");
+        if (checklist == null) throw new NoSuchElementException("Чеклист с таким id не найден");
 
         checklist.setText(newChecklist);
     }

@@ -47,10 +47,12 @@ public class Command {
             System.out.println("Список задач пуст");
             return;
         }
-        System.out.println("ID                 Priority  Status      Text");
+        System.out.println("ID Priority  Status      Deadline     Assignee    Text");
         for (Task task : tasks) {
-            System.out.printf("%-2d %-9s %-11s %s%n",
-                    task.getId(), task.getPriority(), task.getStatus(), task.getText());
+            String deadlineStr = formatDeadline(task.getDeadlineAt());
+            String assignee = task.getAssigneeUsername() != null ? task.getAssigneeUsername() : "-";
+            System.out.printf("%-2d %-9s %-11s %-12s %-11s %s%n",
+                    task.getId(), task.getPriority(), task.getStatus(), deadlineStr, assignee, task.getText());
         }
     }
 
@@ -126,7 +128,6 @@ public class Command {
         }
     }
 
-    // ==================== CHECKLIST COMMANDS ====================
 
     public void checkAdd(long taskId, String text) {
         Task task = taskManager.getById(taskId);
@@ -155,7 +156,7 @@ public class Command {
             System.out.println("Чеклист пуст");
             return;
         }
-        System.out.println("ID  Done  Text");
+        System.out.println("ID Done  Text");
         for (Checklist item : items) {
             System.out.printf("%-2d %-5s %s%n",
                     item.getId(), item.isDone() ? "YES" : "NO", item.getText());
@@ -172,7 +173,6 @@ public class Command {
         System.out.println("OK item " + itemId + " DONE=" + (item.isDone() ? "YES" : "NO"));
     }
 
-    // ==================== HELPERS ====================
 
     private Instant parseDeadline(String deadlineStr) {
         if (deadlineStr == null || deadlineStr.isEmpty()) {
@@ -191,9 +191,8 @@ public class Command {
         return LocalDate.ofInstant(deadline, ZoneOffset.UTC).toString();
     }
     public void taskAddInteractive(Scanner scanner, String ownerUsername) {
-        System.out.println("=== Создание новой задачи ===");
+        System.out.println("Создание новой задачи:");
 
-        // Текст задачи
         String text = null;
         while (text == null || text.isEmpty()) {
             System.out.print("Текст задачи: ");
@@ -203,7 +202,6 @@ public class Command {
             }
         }
 
-        // Приоритет
         TaskPriority priority = null;
         while (priority == null) {
             System.out.print("Приоритет (LOW|MEDIUM|HIGH): ");
@@ -215,7 +213,6 @@ public class Command {
             }
         }
 
-        // Дедлайн
         Instant deadline = null;
         boolean deadlineSet = false;
         while (!deadlineSet) {
@@ -235,7 +232,6 @@ public class Command {
             }
         }
 
-        // Создание задачи
         try {
             long id = taskManager.getTaskNextId();
             Task task = new Task(
