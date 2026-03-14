@@ -229,8 +229,7 @@ public class Command {
         try {
             long id = taskManager.getTaskNextId();
             Task task = new Task(
-                    id, text, priority, TaskStatus.NEW, deadline,
-                    null, ownerUsername != null ? ownerUsername : "SYSTEM",
+                    id, text, priority, TaskStatus.NEW, deadline, null, ownerUsername != null ? ownerUsername : "SYSTEM",
                     Instant.now(), Instant.now()
             );
             taskManager.addTask(task);

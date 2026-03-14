@@ -99,7 +99,7 @@ public class Main {
                 }
             }
             case "task_update" -> {
-                if (parts.length < 4) {
+                if (parts.length < 3) {
                     System.err.println("Ошибка: task_update <id> <field>=<value>");
                     return;
                 }
