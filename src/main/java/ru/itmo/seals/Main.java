@@ -32,7 +32,7 @@ public class Main {
             try {
                 processCommand(input, handler, currentUsername, scanner);
             } catch (Exception e) {
-                System.out.println("Ошибка: " + e.getMessage());
+                System.err.println("Ошибка: " + e.getMessage());
             }
         }
         scanner.close();
@@ -88,107 +88,107 @@ public class Main {
             case "task_list" -> handler.taskList();
             case "task_show" -> {
                 if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите task_id");
+                    System.err.println("Ошибка: укажите task_id");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.taskShow(taskId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "task_update" -> {
                 if (parts.length < 4) {
-                    System.out.println("Ошибка: task_update <id> <field>=<value>");
+                    System.err.println("Ошибка: task_update <id> <field>=<value>");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     String[] fieldVal = parts[2].split("=", 2);
                     if (fieldVal.length != 2) {
-                        System.out.println("Ошибка: формат field=value");
+                        System.err.println("Ошибка: формат field=value");
                         return;
                     }
                     handler.taskUpdate(taskId, fieldVal[0], fieldVal[1]);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "task_done" -> {
                 if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите task_id");
+                    System.err.println("Ошибка: укажите task_id");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.taskDone(taskId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "task_assign" -> {
                 if (parts.length < 3) {
-                    System.out.println("Ошибка: task_assign <task_id> <username>");
+                    System.err.println("Ошибка: task_assign <task_id> <username>");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.taskAssign(taskId, parts[2]);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "task_delete" -> {
                 if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите task_id");
+                    System.err.println("Ошибка: укажите task_id");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.taskDelete(taskId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "check_add" -> {
                 if (parts.length < 3) {
-                    System.out.println("Ошибка: check_add <task_id> <text>");
+                    System.err.println("Ошибка: check_add <task_id> <text>");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.checkAdd(taskId, parts[2]);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "check_list" -> {
                 if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите task_id");
+                    System.err.println("Ошибка: укажите task_id");
                     return;
                 }
                 try {
                     long taskId = Long.parseLong(parts[1]);
                     handler.checkList(taskId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
             case "check_toggle" -> {
                 if (parts.length < 2) {
-                    System.out.println("Ошибка: укажите item_id");
+                    System.err.println("Ошибка: укажите item_id");
                     return;
                 }
                 try {
                     long itemId = Long.parseLong(parts[1]);
                     handler.checkToggle(itemId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Ошибка: id должен быть числом");
+                    System.err.println("Ошибка: id должен быть числом");
                 }
             }
 
-            default -> System.out.println("Ошибка: неизвестная команда '" + command + "'");
+            default -> System.err.println("Ошибка: неизвестная команда '" + command + "'");
         }
     }
 

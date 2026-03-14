@@ -37,7 +37,7 @@ public class Command {
 
             System.out.println("OK task_id=" + id);
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+            System.err.println("Ошибка: " + e.getMessage());
         }
     }
 
@@ -148,7 +148,7 @@ public class Command {
     public void checkList(long taskId) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         List<Checklist> items = checklistManager.getByTaskId(taskId);
@@ -166,7 +166,7 @@ public class Command {
     public void checkToggle(long itemId) {
         Checklist item = checklistManager.getById(itemId);
         if (item == null) {
-            System.out.println("Ошибка: item с id=" + itemId + " не найден");
+            System.err.println("Ошибка: item с id=" + itemId + " не найден");
             return;
         }
         item.setDone(!item.isDone());
