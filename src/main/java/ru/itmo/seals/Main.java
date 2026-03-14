@@ -195,7 +195,7 @@ public class Main {
     private static void printHelp() {
         System.out.println("""
             Команды:
-              task_add <text> [priority] [deadline]        - Создать задачу
+              task_add <text> [priority] [deadline]      - Создать задачу
               task_list                                  - Список задач
               task_show <task_id>                        - Показать задачу
               task_update <id> <field>=<value>           - Обновить задачу
