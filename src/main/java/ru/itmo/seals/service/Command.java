@@ -59,7 +59,7 @@ public class Command {
     public void taskShow(long taskId) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         List<Checklist> items = checklistManager.getByTaskId(taskId);
@@ -74,7 +74,7 @@ public class Command {
     public void taskUpdate(long taskId, String field, String value) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         try {
@@ -85,20 +85,20 @@ public class Command {
                 case "deadline" -> task.setDeadlineAt(parseDeadline(value));
                 case "assignee" -> task.setAssigneeUsername(value);
                 default -> {
-                    System.out.println("Ошибка: неизвестное поле '" + field + "'");
+                    System.err.println("Ошибка: неизвестное поле '" + field + "'");
                     return;
                 }
             }
             System.out.println("OK");
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+            System.err.println("Ошибка: " + e.getMessage());
         }
     }
 
     public void taskDone(long taskId) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         task.setStatus(TaskStatus.DONE);
@@ -108,11 +108,11 @@ public class Command {
     public void taskAssign(long taskId, String username) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         if (username == null || username.isEmpty()) {
-            System.out.println("Ошибка: пустой username");
+            System.err.println("Ошибка: пустой username");
             return;
         }
         task.setAssigneeUsername(username);
@@ -124,7 +124,7 @@ public class Command {
         if (removed) {
             System.out.println("OK deleted");
         } else {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
         }
     }
 
@@ -132,7 +132,7 @@ public class Command {
     public void checkAdd(long taskId, String text) {
         Task task = taskManager.getById(taskId);
         if (task == null) {
-            System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+            System.err.println("Ошибка: задача с id=" + taskId + " не найдена");
             return;
         }
         try {
@@ -141,7 +141,7 @@ public class Command {
             checklistManager.addChecklist(item);
             System.out.println("OK item_id=" + id);
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+            System.err.println("Ошибка: " + e.getMessage());
         }
     }
 
