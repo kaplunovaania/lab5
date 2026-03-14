@@ -15,8 +15,7 @@ public class Command {
     private final TaskCollectionManager taskManager;
     private final ChecklistCollectionManager checklistManager;
 
-    public Command(TaskCollectionManager taskManager,
-                          ChecklistCollectionManager checklistManager) {
+    public Command(TaskCollectionManager taskManager, ChecklistCollectionManager checklistManager) {
         this.taskManager = taskManager;
         this.checklistManager = checklistManager;
     }
@@ -28,11 +27,7 @@ public class Command {
             Instant deadline = parseDeadline(deadlineStr);
 
             long id = taskManager.getTaskNextId();
-            Task task = new Task(
-                    id, text, priority, TaskStatus.NEW, deadline,
-                    null, ownerUsername != null ? ownerUsername : "SYSTEM",
-                    Instant.now(), Instant.now()
-            );
+            Task task = new Task( id, text, priority, TaskStatus.NEW, deadline, null, ownerUsername != null ? ownerUsername : "SYSTEM", Instant.now(), Instant.now());
             taskManager.addTask(task);
 
             System.out.println("OK task_id=" + id);
@@ -51,8 +46,7 @@ public class Command {
         for (Task task : tasks) {
             String deadlineStr = formatDeadline(task.getDeadlineAt());
             String assignee = task.getAssigneeUsername() != null ? task.getAssigneeUsername() : "-";
-            System.out.printf("%-2d %-9s %-11s %-12s %-11s %s%n",
-                    task.getId(), task.getPriority(), task.getStatus(), deadlineStr, assignee, task.getText());
+            System.out.printf("%-2d %-9s %-11s %-12s %-11s %s%n", task.getId(), task.getPriority(), task.getStatus(), deadlineStr, assignee, task.getText());
         }
     }
 
@@ -209,7 +203,7 @@ public class Command {
             try {
                 priority = TaskPriority.valueOf(priorityStr);
             } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: неверный приоритет. Допустимые значения: LOW, MEDIUM, HIGH");
+                System.err.println("Ошибка: неверный приоритет. Допустимые значения: LOW, MEDIUM, HIGH");
             }
         }
 
@@ -227,7 +221,7 @@ public class Command {
                     deadline = date.atStartOfDay(ZoneOffset.UTC).toInstant();
                     deadlineSet = true;
                 } catch (Exception e) {
-                    System.out.println("Ошибка: неверный формат даты. Используйте YYYY-MM-DD");
+                    System.err.println("Ошибка: неверный формат даты. Используйте YYYY-MM-DD");
                 }
             }
         }
@@ -242,7 +236,7 @@ public class Command {
             taskManager.addTask(task);
             System.out.println("OK task_id=" + id);
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+            System.err.println("Ошибка: " + e.getMessage());
         }
     }
 }
