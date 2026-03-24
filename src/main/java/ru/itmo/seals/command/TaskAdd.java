@@ -130,16 +130,7 @@ public class TaskAdd extends Command {
     private void createAndSaveTask(String text, TaskPriority priority, Instant deadline, String ownerUsername) {
         try {
             long id = taskManager.getTaskNextId();
-            Task task = new Task(
-                    id,
-                    text,
-                    priority,
-                    TaskStatus.NEW,
-                    deadline,
-                    null, // assignee
-                    ownerUsername,
-                    Instant.now(),
-                    Instant.now()
+            Task task = new Task(id, text, priority, TaskStatus.NEW, deadline, null, ownerUsername, Instant.now(), Instant.now()
             );
             taskManager.addTask(task);
             System.out.println("OK task_id=" + id);

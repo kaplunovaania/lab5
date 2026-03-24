@@ -6,14 +6,28 @@ import ru.itmo.seals.service.TaskCollectionManager;
 import java.util.Scanner;
 
 
-abstract class Command {
+public abstract class Command {
     private TaskCollectionManager taskManager = null;
     private ChecklistCollectionManager checklistManager = null;
 
     public Command() {
-        this.taskManager = taskManager;
-        this.checklistManager = checklistManager;
     }
 
     public abstract void execute(String[] args, Scanner scanner);
+
+    public TaskCollectionManager getTaskManager() {
+        return taskManager;
+    }
+
+    public void setTaskManager(TaskCollectionManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
+    public ChecklistCollectionManager getChecklistManager() {
+        return checklistManager;
+    }
+
+    public void setChecklistManager(ChecklistCollectionManager checklistManager) {
+        this.checklistManager = checklistManager;
+    }
 }

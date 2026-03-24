@@ -33,6 +33,22 @@ public final class Checklist {
             this.updatedAt = Instant.now();
         }
     }
+
+    public Checklist(long id, long taskId, String text, long id1, Instant createdAt) {
+        this.id = id1;
+        this.createdAt = createdAt;
+    }
+
+    public Checklist(long id, long taskId, String text) {
+        this.id = id;
+        this.taskId = taskId;
+        validateText(text);
+        this.text = text;
+        this.done = false;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
     private void validateText(String text) {
         if (text == null || text.isEmpty() || text.length() > 25) {
             throw new IllegalArgumentException("Invalid text: " + text + "текст не должен превышать 25 символов");
