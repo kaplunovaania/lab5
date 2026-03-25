@@ -35,6 +35,10 @@ public class TaskCollectionManager {
         return taskCollection.remove(id) != null;
     }
 
+    public void clear() {
+        taskCollection.clear();
+    }
+
     public void update(long id, String newText) {
         Task task = getById(id);
         if (task == null) throw new NoSuchElementException("Нет задания с таким id");

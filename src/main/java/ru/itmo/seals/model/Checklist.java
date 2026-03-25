@@ -65,7 +65,7 @@ public final class Checklist {
     public void setText(String text) {
         validateText(text);
             this.text = text;
-            this.updatedAt = Instant.now();  // ← Только это добавить!
+            this.updatedAt = Instant.now();
         }
 
     public void setDone(boolean done) {

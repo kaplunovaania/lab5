@@ -42,6 +42,9 @@ public class ChecklistCollectionManager {
 
         checklist.setText(newChecklist);
     }
+    public void clear() {
+        checklistCollection.clear();
+    }
 
     public List<Checklist> getByTaskId(long taskId) {
         List<Checklist> result = new ArrayList<>();
