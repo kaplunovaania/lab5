@@ -31,7 +31,6 @@ public class FileValidator {
         if (data.tasks == null) data.tasks = new ArrayList<>();
         if (data.checklists == null) data.checklists = new ArrayList<>();
 
-        // 1. Проверка дубликатов ID задач
         Set<Long> taskIds = new HashSet<>();
         for (TaskDto task : data.tasks) {
             if (task == null) {
@@ -44,7 +43,6 @@ public class FileValidator {
             validateTask(task, result);
         }
 
-        // 2. Проверка чеклистов
         Set<Long> checklistIds = new HashSet<>();
         for (ChecklistDto checklist : data.checklists) {
             if (checklist == null) {

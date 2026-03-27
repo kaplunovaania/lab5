@@ -16,7 +16,7 @@ public class Main {
         FileStorage storage = new FileStorage();
 
         if (args.length > 0) {
-            System.out.println("Загрузка из " + args[0] + "...");
+            System.out.println("Загрузка из " + args[0]);
             storage.load(args[0], taskManager, checklistManager);
         }
         Scanner scanner = new Scanner(System.in);
@@ -37,19 +37,18 @@ public class Main {
 
         System.out.println("Task & Checklist Manager. Введите 'help' для списка команд.");
 
-        label:
         while (true) {
             System.out.print("> ");
             String input = scanner.nextLine().trim();
-            switch (input) {
-                case "":
-                    continue;
-                case "exit":
-                case "quit":
-                    break label;
-                case "help":
-                    printHelp();
-                    continue;
+
+            if (input.isEmpty()) continue;
+            if (input.equals("exit")) {
+                System.out.println("Выход.");
+                break;
+            }
+            if (input.equals("help")) {
+                printHelp();
+                continue;
             }
 
             String[] parts = input.split("\\s+", 10);
@@ -76,20 +75,20 @@ public class Main {
     private static void printHelp() {
         System.out.println("""
         Команды:
-        task_add [текст] [приоритет] [дедлайн]    - Создать новую задачу
-        task_list                                  - Показать список всех задач
-        task_show <id>                             - Показать детали задачи
-        task_update <id> <поле>=<значение>         - Изменить поле задачи
-        task_done <id>                             - Отметить задачу выполненной
-        task_assign <id> <username>                - Назначить исполнителя
-        task_delete <id>                           - Удалить задачу
-        check_add <task_id> <текст>                - Добавить пункт чеклиста
-        check_list <task_id>                       - Показать чеклист задачи
-        check_toggle <item_id>                     - Переключить статус пункта
-        save <путь>                                - Сохранить данные в файл JSON
-        load <путь>                                - Загрузить данные из файла JSON
-        help                                       - Показать эту справку
-        exit                                       - Выход из программы
+        task_add [текст] [приоритет] [дедлайн (ГГГГ-ММ-ЧЧ]    - Создать новую задачу
+        task_list                                             - Показать список всех задач
+        task_show <id>                                        - Показать детали задачи
+        task_update <id> <поле>=<значение>                    - Изменить поле задачи
+        task_done <id>                                        - Отметить задачу выполненной
+        task_assign <id> <username>                           - Назначить исполнителя
+        task_delete <id>                                      - Удалить задачу
+        check_add <task_id> <текст>                           - Добавить пункт чеклиста
+        check_list <task_id>                                  - Показать чеклист задачи
+        check_toggle <item_id>                                - Переключить статус пункта
+        save <путь>                                           - Сохранить данные в файл JSON
+        load <путь>                                           - Загрузить данные из файла JSON
+        help                                                  - Показать помощь
+        exit                                                  - Выход из программы
         """);
     }
 }

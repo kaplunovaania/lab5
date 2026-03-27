@@ -28,7 +28,7 @@ public class TaskShow extends Command {
             Task task = taskManager.getById(taskId);
 
             if (task == null) {
-                System.out.println("Ошибка: задача с id=" + taskId + " не найдена");
+                System.out.println("Ошибка: задача с id = " + taskId + " не найдена");
                 return;
             }
 
@@ -36,7 +36,7 @@ public class TaskShow extends Command {
             String deadlineStr = (task.getDeadlineAt() == null) ? "null" :
                     java.time.LocalDate.ofInstant(task.getDeadlineAt(), java.time.ZoneOffset.UTC).toString();
 
-            System.out.println("Task #" + task.getId());
+            System.out.println("Task" + task.getId());
             System.out.println("status: " + task.getStatus());
             System.out.println("priority: " + task.getPriority());
             System.out.println("deadline: " + deadlineStr);

@@ -133,7 +133,7 @@ public class TaskAdd extends Command {
             Task task = new Task(id, text, priority, TaskStatus.NEW, deadline, null, ownerUsername, Instant.now(), Instant.now()
             );
             taskManager.addTask(task);
-            System.out.println("OK task_id=" + id);
+            System.out.println("OK task_id = " + id);
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка валидации: " + e.getMessage());
         } catch (Exception e) {

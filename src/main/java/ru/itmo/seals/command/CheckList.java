@@ -31,8 +31,7 @@ public class CheckList extends Command {
             List<Checklist> items = checklistManager.getByTaskId(taskId);
             System.out.println("ID  Done  Text");
             for (Checklist item : items) {
-                System.out.printf("%-2d %-5s %s%n",
-                        item.getId(), item.isDone() ? "YES" : "NO", item.getText());
+                System.out.printf("%-2d %-5s %s%n", item.getId(), item.isDone() ? "YES" : "NO", item.getText());
             }
         } catch (NumberFormatException e) {
             System.out.println("Ошибка: ID должен быть числом");

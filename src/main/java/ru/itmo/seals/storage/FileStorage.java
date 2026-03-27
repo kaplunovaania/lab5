@@ -12,8 +12,6 @@ import java.util.List;
 public class FileStorage {
     private final JsonMapper jsonMapper;
     private final FileValidator validator;
-
-    // Временное хранилище для атомарной загрузки
     private List<Task> pendingTasks;
     private List<Checklist> pendingChecklists;
 
@@ -29,7 +27,6 @@ public class FileStorage {
         data.tasks = new ArrayList<>();
         data.checklists = new ArrayList<>();
 
-        // Конвертируем Task → TaskDto
         for (Task task : taskManager.getAll()) {
             TaskDto dto = new TaskDto();
             dto.id = task.getId();
@@ -44,7 +41,6 @@ public class FileStorage {
             data.tasks.add(dto);
         }
 
-        // Конвертируем Checklist → ChecklistDto
         for (Checklist checklist : checklistManager.getAll()) {
             ChecklistDto dto = new ChecklistDto();
             dto.id = checklist.getId();
@@ -63,10 +59,8 @@ public class FileStorage {
                         ChecklistCollectionManager checklistManager) {
 
         try {
-            // 1. Читаем файл
             DataDto data = jsonMapper.load(path);
 
-            // 2. Валидируем
             FileValidator.ValidationResult validation = validator.validate(data);
             if (!validation.isValid) {
                 System.out.println("Ошибка валидации файла:");
@@ -76,7 +70,6 @@ public class FileStorage {
                 return false;
             }
 
-            // 3. Сохраняем во временное хранилище
             pendingTasks = new ArrayList<>();
             pendingChecklists = new ArrayList<>();
 
@@ -90,8 +83,7 @@ public class FileStorage {
                 pendingChecklists.add(checklist);
             }
 
-            // 4. Очищаем текущие коллекции и загружаем новые
-            // (здесь нужно добавить методы clear() в менеджеры)
+
             taskManager.clear();
             checklistManager.clear();
 
@@ -136,7 +128,6 @@ public class FileStorage {
     private Checklist dtoToChecklist(ChecklistDto dto) {
         Checklist checklist = new Checklist(dto.id, dto.taskId, dto.text);
         checklist.setDone(dto.done);
-        // Нужно добавить сеттеры для createdAt/updatedAt или изменить конструктор
         return checklist;
     }
 }

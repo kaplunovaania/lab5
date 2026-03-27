@@ -19,7 +19,7 @@ public class TaskUpdate extends Command {
     @Override
     public void execute(String[] args, Scanner scanner) {
         if (args.length < 2) {
-            System.out.println("Ошибка: формат task_update <id> <поле>=<значение>");
+            System.out.println("Ошибка: формат task_update <id> <поле (priority, text, deadline, status, assignee)>=<значение>");
             return;
         }
 
