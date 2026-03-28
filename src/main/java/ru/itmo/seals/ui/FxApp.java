@@ -15,44 +15,28 @@ public class FxApp extends Application {
     private static ChecklistCollectionManager checklistManager;
     private static FileStorage storage;
 
-    // Передаём менеджеры из main
-    public static void setManagers(TaskCollectionManager tm,
-                                   ChecklistCollectionManager cm,
-                                   FileStorage s) {
-        taskManager = tm;
-        checklistManager = cm;
-        storage = s;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Загружаем FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ru/itmo/seals/ui/main-view.fxml"));
         Parent root = loader.load();
 
-        // Получаем контроллер и инициализируем его
         MasterController controller = loader.getController();
         controller.init(taskManager, checklistManager, storage);
 
-        // Настраиваем окно
-        primaryStage.setTitle("Task & Checklist Manager (Master-Detail)");
-        primaryStage.setScene(new Scene(root, 1100, 650));
+        primaryStage.setTitle("Task Manager");
+        primaryStage.setScene(new Scene(root, 1200, 700));
         primaryStage.show();
     }
 
     public static void main(String[] args) {
-        // Инициализация менеджеров
         taskManager = new TaskCollectionManager();
         checklistManager = new ChecklistCollectionManager();
         storage = new FileStorage();
 
-        // Автозагрузка если есть аргумент командной строки
         if (args.length > 0) {
-            System.out.println("Auto-loading from: " + args[0]);
             storage.load(args[0], taskManager, checklistManager);
         }
 
-        // Запуск JavaFX
         launch(args);
     }
 }
