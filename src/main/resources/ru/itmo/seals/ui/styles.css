@@ -1,11 +1,11 @@
-/* Общие стили */
+/* общие стили */
 .root {
     -fx-background-color: #fce4ec;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
 }
 
-/* Верхняя панель */
+/* верхняя панель */
 .top-bar {
     -fx-background-color: linear-gradient(to right, #F06292, #EC407A);
     -fx-padding: 12 15;
@@ -40,7 +40,7 @@
     -fx-background-color: #C2185B;
 }
 
-/* Боковая панель */
+/* боковая панель */
 .side-panel {
     -fx-background-color: white;
     -fx-border-color: #F8BBD9;
@@ -54,7 +54,7 @@
     -fx-padding: 15 15 5 15;
 }
 
-/* Таблица */
+/* таблица */
 .table-view {
     -fx-background-color: white;
     -fx-border-color: transparent;
@@ -78,7 +78,7 @@
     -fx-text-fill: white;
 }
 
-/* Детали */
+/* детали */
 .detail-panel {
     -fx-background-color: white;
     -fx-background-radius: 10;
@@ -102,7 +102,7 @@
     -fx-text-fill: #C2185B;
 }
 
-/* Поиск */
+/* поиск */
 .search-field {
     -fx-background-radius: 20;
     -fx-border-radius: 20;
@@ -146,7 +146,7 @@
     -fx-font-weight: bold;
 }
 
-/* Прогресс бар */
+/* прогресс бар */
 .progress-bar {
     -fx-accent: #EC407A;
 }
@@ -182,7 +182,7 @@
     -fx-text-fill: white;
 }
 
-/* Диалоги */
+/* диалоги */
 .dialog-pane {
     -fx-background-color: #FCE4EC;
 }
@@ -213,7 +213,7 @@
     -fx-background-color: #D81B60;
 }
 
-/* Tooltip */
+/* tooltip */
 .tooltip {
     -fx-background-color: rgba(136, 14, 79, 0.9);
     -fx-text-fill: white;
@@ -222,12 +222,12 @@
     -fx-background-radius: 5;
 }
 
-/ Разделители/
+/* разделители*/
 .separator .line {
     -fx-background-color: #F8BBD9;
 }
 
-/* Выбор */
+/* выбор */
 .choice-box, .date-picker {
     -fx-background-color: white;
     -fx-border-color: #F8BBD9;
