@@ -1,0 +1,40 @@
+{
+  "tasks": [
+    {
+      "id": 0,
+      "text": " упить молоко",
+      "priority": "MEDIUM",
+      "status": "NEW",
+      "ownerUsername": "SYSTEM",
+      "createdAt": "2026-03-28T10:05:29.063593Z",
+      "updatedAt": "2026-03-28T10:05:29.063593Z"
+    },
+    {
+      "id": 1,
+      "text": "сдать  прогу",
+      "priority": "MEDIUM",
+      "status": "NEW",
+      "ownerUsername": "SYSTEM",
+      "createdAt": "2026-03-28T10:10:29.565543600Z",
+      "updatedAt": "2026-03-28T10:10:29.565543600Z"
+    }
+  ],
+  "checklists": [
+    {
+      "id": 0,
+      "taskId": 1,
+      "text": "сдать прогу",
+      "done": true,
+      "createdAt": "2026-03-28T10:10:45.120312900Z",
+      "updatedAt": "2026-03-28T10:10:48.710867800Z"
+    },
+    {
+      "id": 1,
+      "taskId": 1,
+      "text": "м€ум€у",
+      "done": false,
+      "createdAt": "2026-03-28T10:11:02.875976100Z",
+      "updatedAt": "2026-03-28T10:11:02.875976100Z"
+    }
+  ]
+}
