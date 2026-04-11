@@ -151,7 +151,7 @@ public class MasterController {
         }
 
         detailAssignee.setText(task.getAssigneeUsername() != null ? task.getAssigneeUsername() : "-");
-        detailOwner.setText(task.getOwnerUsername() != null ? task.getOwnerUsername() : "-");
+        detailOwner.setText("ID: " + task.getOwnerId());
 
         if (task.getCreatedAt() != null) {
             detailCreated.setText(task.getCreatedAt().atZone(ZoneOffset.UTC).format(DATE_FORMAT));
@@ -269,7 +269,7 @@ public class MasterController {
                                 ? date.getValue().atStartOfDay(ZoneOffset.UTC).toInstant()
                                 : null,
                         null,
-                        "SYSTEM",
+                        1,
                         Instant.now(),
                         Instant.now()
                 );

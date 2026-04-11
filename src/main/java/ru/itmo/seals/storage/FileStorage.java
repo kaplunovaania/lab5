@@ -35,7 +35,7 @@ public class FileStorage {
             dto.status = task.getStatus().name();
             dto.deadlineAt = task.getDeadlineAt() != null ? task.getDeadlineAt().toString() : null;
             dto.assigneeUsername = task.getAssigneeUsername();
-            dto.ownerUsername = task.getOwnerUsername();
+            dto.ownerId = task.getOwnerId();
             dto.createdAt = task.getCreatedAt().toString();
             dto.updatedAt = task.getUpdatedAt().toString();
             data.tasks.add(dto);
@@ -119,7 +119,7 @@ public class FileStorage {
                 TaskStatus.valueOf(dto.status),
                 dto.deadlineAt != null ? Instant.parse(dto.deadlineAt) : null,
                 dto.assigneeUsername,
-                dto.ownerUsername,
+                dto.ownerId,
                 Instant.parse(dto.createdAt),
                 Instant.parse(dto.updatedAt)
         );

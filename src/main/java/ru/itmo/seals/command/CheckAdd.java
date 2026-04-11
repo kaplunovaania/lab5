@@ -4,18 +4,25 @@ import ru.itmo.seals.model.Checklist;
 import ru.itmo.seals.service.TaskCollectionManager;
 import ru.itmo.seals.service.ChecklistCollectionManager;
 import java.util.Scanner;
+import ru.itmo.seals.service.UserService;
 
 public class CheckAdd extends Command {
     private final TaskCollectionManager taskManager;
     private final ChecklistCollectionManager checklistManager;
+    private final UserService userService;
 
-    public CheckAdd(TaskCollectionManager taskManager, ChecklistCollectionManager checklistManager) {
+    public CheckAdd(TaskCollectionManager taskManager, ChecklistCollectionManager checklistManager, UserService userService) {
         this.taskManager = taskManager;
         this.checklistManager = checklistManager;
+        this.userService = userService;
     }
 
     @Override
     public void execute(String[] args, Scanner scanner) {
+        if (!userService.isLoggedIn()) {
+            System.out.println("Ошибка: необходимо войти в систему");
+            return;
+        }
         if (args.length < 2) {
             System.out.println("Ошибка: формат check_add <task_id> <text>");
             return;

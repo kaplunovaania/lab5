@@ -8,16 +8,23 @@ import ru.itmo.seals.service.TaskCollectionManager;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Scanner;
+import ru.itmo.seals.service.UserService;
 
 public class TaskUpdate extends Command {
     private final TaskCollectionManager taskManager;
+    private final UserService userService;
 
-    public TaskUpdate(TaskCollectionManager taskManager) {
+    public TaskUpdate(TaskCollectionManager taskManager, UserService userService) {
         this.taskManager = taskManager;
+        this.userService = userService;
     }
 
     @Override
     public void execute(String[] args, Scanner scanner) {
+        if (!userService.isLoggedIn()) {
+            System.out.println("Ошибка: необходимо войти в систему");
+            return;
+        }
         if (args.length < 2) {
             System.out.println("Ошибка: формат task_update <id> <поле (priority, text, deadline, status, assignee)>=<значение>");
             return;
@@ -26,7 +33,10 @@ public class TaskUpdate extends Command {
         try {
             long taskId = Long.parseLong(args[0]);
             Task task = taskManager.getById(taskId);
-
+            if (task.getOwnerId() != userService.getCurrentUserId()) {
+                System.out.println("Ошибка: у вас нет прав на изменение этого объекта");
+                return;
+            }
             if (task == null) {
                 System.out.println("Ошибка: задача не найдена");
                 return;

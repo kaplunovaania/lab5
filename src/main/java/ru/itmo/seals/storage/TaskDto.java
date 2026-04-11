@@ -7,7 +7,7 @@ public class TaskDto {
     public String status;
     public String deadlineAt;
     public String assigneeUsername;
-    public String ownerUsername;
+    public long ownerId;
     public String createdAt;
     public String updatedAt;
 }

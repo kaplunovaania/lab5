@@ -8,19 +8,19 @@ public final class Task {
     private String text;
     private TaskPriority priority;
     private TaskStatus status;
-// Дедлайн (до какого дня сделать). Можно null, если незадан.
+// Дедлайн (до какого дня сделать). Можно null, если не задан.
     private Instant deadlineAt;
 // На кого назначена (логин). Можно null, если не назначено.
     private String assigneeUsername;
 // Кто создал задачу (логин). На ранних этапах можно "SYSTEM".
-    private String ownerUsername;
+    private long ownerId;
     // Когда создано. Программа ставит автоматически.
     private final Instant createdAt;
     // Когда обновляли. Программа обновляет автоматически.
     private Instant updatedAt;
 
     public Task(long id, String text, TaskPriority priority, TaskStatus status,
-                Instant deadlineAt, String assigneeUsername, String ownerUsername,
+                Instant deadlineAt, String assigneeUsername, long ownerId,
                 Instant createdAt, Instant updatedAt) {
         this.id = id;
         validateText(text);
@@ -31,7 +31,7 @@ public final class Task {
         this.status = status;
         this.deadlineAt = deadlineAt;
         this.assigneeUsername = assigneeUsername;
-        this.ownerUsername = ownerUsername != null ? ownerUsername : "SYSTEM";
+        this.ownerId = ownerId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -82,10 +82,6 @@ public final class Task {
         return assigneeUsername;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -93,6 +89,11 @@ public final class Task {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public long getOwnerId() {
+        return ownerId;
+    }
+
 
     public void setText(String text) {
         validateText(text);
@@ -122,8 +123,9 @@ public final class Task {
         this.updatedAt = Instant.now();
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
         this.updatedAt = Instant.now();
     }
 
@@ -132,12 +134,12 @@ public final class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(text, task.text) && priority == task.priority && status == task.status && Objects.equals(deadlineAt, task.deadlineAt) && Objects.equals(assigneeUsername, task.assigneeUsername) && Objects.equals(ownerUsername, task.ownerUsername) && Objects.equals(createdAt, task.createdAt) && Objects.equals(updatedAt, task.updatedAt);
+        return id == task.id && Objects.equals(text, task.text) && priority == task.priority && status == task.status && Objects.equals(deadlineAt, task.deadlineAt) && Objects.equals(assigneeUsername, task.assigneeUsername) && Objects.equals(ownerId, task.ownerId) && Objects.equals(createdAt, task.createdAt) && Objects.equals(updatedAt, task.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, priority, status, deadlineAt, assigneeUsername, ownerUsername, createdAt, updatedAt);
+        return Objects.hash(id, text, priority, status, deadlineAt, assigneeUsername, ownerId, createdAt, updatedAt);
     }
 
     @Override
@@ -149,7 +151,7 @@ public final class Task {
                 ", status=" + status +
                 ", deadlineAt=" + deadlineAt +
                 ", assigneeUsername='" + assigneeUsername + '\'' +
-                ", ownerUsername='" + ownerUsername + '\'' +
+                ", ownerId=" + ownerId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

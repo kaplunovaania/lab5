@@ -2,16 +2,23 @@ package ru.itmo.seals.command;
 
 import ru.itmo.seals.service.TaskCollectionManager;
 import java.util.Scanner;
+import ru.itmo.seals.service.UserService;
 
 public class TaskAssign extends Command {
     private final TaskCollectionManager taskManager;
+    private final UserService userService;
 
-    public TaskAssign(TaskCollectionManager taskManager) {
+    public TaskAssign(TaskCollectionManager taskManager, UserService userService) {
         this.taskManager = taskManager;
+        this.userService = userService;
     }
 
     @Override
     public void execute(String[] args, Scanner scanner) {
+        if (!userService.isLoggedIn()) {
+            System.out.println("Ошибка: необходимо войти в систему");
+            return;
+        }
         if (args.length < 2) {
             System.out.println("Ошибка: формат task_assign <id> <username>");
             return;
@@ -30,7 +37,10 @@ public class TaskAssign extends Command {
                 System.out.println("Ошибка: задача не найдена");
                 return;
             }
-
+            if (task.getOwnerId() != userService.getCurrentUserId()) {
+                System.out.println("Ошибка: у вас нет прав на изменение этого объекта");
+                return;
+            }
             task.setAssigneeUsername(username);
             System.out.println("OK assigned");
         } catch (NumberFormatException e) {

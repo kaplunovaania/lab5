@@ -4,6 +4,7 @@ import ru.itmo.seals.model.Task;
 import ru.itmo.seals.model.TaskPriority;
 import ru.itmo.seals.model.TaskStatus;
 import ru.itmo.seals.service.TaskCollectionManager;
+import ru.itmo.seals.service.UserService;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,23 +13,29 @@ import java.util.Scanner;
 
 public class TaskAdd extends Command {
     private final TaskCollectionManager taskManager;
-    public TaskAdd(TaskCollectionManager taskManager) {
+    private final UserService userService;
+
+    public TaskAdd(TaskCollectionManager taskManager, UserService userService) {
         super();
         this.taskManager = taskManager;
+        this.userService = userService;
     }
 
     @Override
     public void execute(String[] args, Scanner scanner) {
-        String ownerUsername = "SYSTEM";
+        if (!userService.isLoggedIn()) {
+            System.out.println("Ошибка: необходимо войти в систему (login/register)");
+            return;
+        }
 
         if (args.length == 0) {
-            runInteractiveMode(scanner, ownerUsername);
+            runInteractiveMode(scanner);
         } else {
-            runArgsMode(args, ownerUsername);
+            runArgsMode(args);
         }
     }
 
-    private void runInteractiveMode(Scanner scanner, String ownerUsername) {
+    private void runInteractiveMode(Scanner scanner) {
         System.out.println("Создание новой задачи");
 
         String text = null;
@@ -69,10 +76,10 @@ public class TaskAdd extends Command {
             }
         }
 
-        createAndSaveTask(text, priority, deadline, ownerUsername);
+        createAndSaveTask(text, priority, deadline);
     }
 
-    private void runArgsMode(String[] args, String ownerUsername) {
+    private void runArgsMode(String[] args) {
         String priorityStr = "MEDIUM";
         String deadlineStr = "";
         int textEndIndex = args.length;
@@ -124,14 +131,15 @@ public class TaskAdd extends Command {
             }
         }
 
-        createAndSaveTask(text, priority, deadline, ownerUsername);
+        createAndSaveTask(text, priority, deadline);
     }
 
-    private void createAndSaveTask(String text, TaskPriority priority, Instant deadline, String ownerUsername) {
+    private void createAndSaveTask(String text, TaskPriority priority, Instant deadline) {
         try {
             long id = taskManager.getTaskNextId();
-            Task task = new Task(id, text, priority, TaskStatus.NEW, deadline, null, ownerUsername, Instant.now(), Instant.now()
-            );
+            long ownerId = userService.getCurrentUserId();
+
+            Task task = new Task(id, text, priority, TaskStatus.NEW, deadline, null, ownerId, Instant.now(), Instant.now());
             taskManager.addTask(task);
             System.out.println("OK task_id = " + id);
         } catch (IllegalArgumentException e) {
