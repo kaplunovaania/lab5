@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.itmo.seals.service.TaskCollectionManager;
 import ru.itmo.seals.service.ChecklistCollectionManager;
+import ru.itmo.seals.service.UserService;
 import ru.itmo.seals.storage.FileStorage;
 
 public class FxApp extends Application {
@@ -21,7 +22,9 @@ public class FxApp extends Application {
         Parent root = loader.load();
 
         MasterController controller = loader.getController();
-        controller.init(taskManager, checklistManager, storage);
+
+        UserService userService = new UserService("users.json");
+        controller.init(taskManager, checklistManager, storage, userService);
 
         primaryStage.setTitle("Task Manager");
         primaryStage.setScene(new Scene(root, 1200, 700));

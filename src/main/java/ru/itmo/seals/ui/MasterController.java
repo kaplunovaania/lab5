@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -16,6 +18,7 @@ import ru.itmo.seals.model.TaskStatus;
 
 import ru.itmo.seals.service.TaskCollectionManager;
 import ru.itmo.seals.service.ChecklistCollectionManager;
+import ru.itmo.seals.service.UserService;
 import ru.itmo.seals.storage.FileStorage;
 
 import java.io.File;
@@ -57,6 +60,7 @@ public class MasterController {
     @FXML private Label statusBarText;
     @FXML private Label taskCount;
     @FXML private Label lastRefresh;
+    @FXML private Label currentUserLabel;
 
     @FXML private ProgressBar progressBar;
     @FXML private Label progressLabel;
@@ -64,6 +68,7 @@ public class MasterController {
     private TaskCollectionManager taskManager;
     private ChecklistCollectionManager checklistManager;
     private FileStorage storage;
+    private UserService userService;
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
     private Task selectedTask;
@@ -82,14 +87,17 @@ public class MasterController {
 
     public void init(TaskCollectionManager taskManager,
                      ChecklistCollectionManager checklistManager,
-                     FileStorage storage) {
+                     FileStorage storage,
+                     UserService userService) {
         this.taskManager = taskManager;
         this.checklistManager = checklistManager;
         this.storage = storage;
+        this.userService = userService;
 
         setupTable();
         setupSelectionListener();
         refreshData();
+        updateCurrentUserLabel();
     }
 
     private void setupTable() {
@@ -260,6 +268,11 @@ public class MasterController {
                     return null;
                 }
 
+                if (!userService.isLoggedIn()) {
+                    showError("Not logged in", "Please login first");
+                    return null;
+                }
+
                 return new ru.itmo.seals.model.Task(
                         taskManager.getTaskNextId(),
                         text.getText().trim(),
@@ -269,7 +282,7 @@ public class MasterController {
                                 ? date.getValue().atStartOfDay(ZoneOffset.UTC).toInstant()
                                 : null,
                         null,
-                        1,
+                        userService.getCurrentUserId(),
                         Instant.now(),
                         Instant.now()
                 );
@@ -538,5 +551,135 @@ public class MasterController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+
+    @FXML
+    private void handleLogin() {
+        Dialog<Boolean> dialog = new Dialog<>();
+        dialog.setTitle("Login");
+        dialog.setHeaderText("Enter your credentials");  // ← ВАЖНО: заголовок!
+        dialog.initOwner(taskTable.getScene().getWindow());  // ← ВАЖНО: привязка к окну
+
+        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+        TextField loginField = new TextField();
+        loginField.setPromptText("Login");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.add(new Label("Login:"), 0, 0);
+        grid.add(loginField, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(passwordField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+        loginButton.setDisable(true);
+
+        loginField.textProperty().addListener((obs, old, newVal) ->
+                loginButton.setDisable(newVal.trim().isEmpty() || passwordField.getText().trim().isEmpty()));
+        passwordField.textProperty().addListener((obs, old, newVal) ->
+                loginButton.setDisable(newVal.trim().isEmpty() || loginField.getText().trim().isEmpty()));
+
+        dialog.setResultConverter(param -> {
+            if (param == loginButtonType) {
+                return userService.login(loginField.getText(), passwordField.getText());
+            }
+            return false;
+        });
+
+        Optional<Boolean> result = dialog.showAndWait();
+
+        result.ifPresent(success -> {
+            if (success) {
+                updateCurrentUserLabel();
+                statusBarText.setText("Logged in successfully");
+            } else {
+                statusBarText.setText("Login failed");
+                showError("Login Error", "Invalid login or password");
+            }
+        });
+    }
+
+    private void updateCurrentUserLabel() {
+        if (currentUserLabel == null || userService == null) {
+            return;
+        }
+
+        if (userService.isLoggedIn()) {
+            currentUserLabel.setText(userService.getCurrentUserLogin());
+        } else {
+            currentUserLabel.setText("Not logged in");
+        }
+    }
+
+    @FXML
+    private void handleRegister() {
+        Dialog<Boolean> dialog = new Dialog<>();
+        dialog.setTitle("Register");
+        dialog.setHeaderText("Create new account");
+        dialog.initOwner(taskTable.getScene().getWindow());
+
+        ButtonType registerButtonType = new ButtonType("Register", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(registerButtonType, ButtonType.CANCEL);
+
+        TextField loginField = new TextField();
+        loginField.setPromptText("Login (min 4 chars)");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password (min 4 chars)");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.add(new Label("Login:"), 0, 0);
+        grid.add(loginField, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(passwordField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        Node registerButton = dialog.getDialogPane().lookupButton(registerButtonType);
+        registerButton.setDisable(true);
+
+        loginField.textProperty().addListener((obs, old, newVal) ->
+                registerButton.setDisable(newVal.trim().length() < 4 || passwordField.getText().trim().length() < 4));
+        passwordField.textProperty().addListener((obs, old, newVal) ->
+                registerButton.setDisable(newVal.trim().length() < 4 || loginField.getText().trim().length() < 4));
+
+        dialog.setResultConverter(param -> {
+            if (param == registerButtonType) {
+                return userService.register(loginField.getText(), passwordField.getText());
+            }
+            return false;
+        });
+
+        Optional<Boolean> result = dialog.showAndWait();
+
+        result.ifPresent(success -> {
+            if (success) {
+                statusBarText.setText("Registration successful");
+            } else {
+                statusBarText.setText("Registration failed");
+            }
+        });
+    }
+
+    @FXML
+    private void handleLogout() {
+        if (userService != null) {
+            userService.logout();
+            updateCurrentUserLabel();
+            statusBarText.setText("Logged out");
+        }
     }
 }

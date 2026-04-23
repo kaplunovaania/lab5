@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ru.itmo.seals.ui.MasterController"
-            prefWidth="1200" prefHeight="700"
-            stylesheets="@styles.css">
+<BorderPane prefHeight="700" prefWidth="1200" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.seals.ui.MasterController">
 
     <top>
-        <HBox styleClass="top-bar" alignment="CENTER_LEFT">
-            <Button text="Refresh" onAction="#handleRefresh" styleClass="btn-primary"/>
-            <Button text="Add Task" onAction="#handleAddTask" styleClass="btn-primary"/>
-            <Button text="Save" onAction="#handleSave" styleClass="btn-primary"/>
-            <Button text="Load" onAction="#handleLoad" styleClass="btn-primary"/>
+        <HBox alignment="CENTER_LEFT" styleClass="top-bar">
+            <Button onAction="#handleRefresh" styleClass="btn-primary" text="Refresh" />
+            <Button onAction="#handleAddTask" styleClass="btn-primary" text="Add Task" />
+            <Button onAction="#handleSave" styleClass="btn-primary" text="Save" />
+            <Button onAction="#handleLoad" styleClass="btn-primary" text="Load" />
 
-            <TextField fx:id="searchField" promptText="Search task..."
-                       HBox.hgrow="ALWAYS" onKeyTyped="#handleSearch"
-                       styleClass="search-field">
+            <TextField fx:id="searchField" onKeyTyped="#handleSearch" promptText="Search task..." styleClass="search-field" HBox.hgrow="ALWAYS">
                 <HBox.margin>
-                    <Insets left="20" right="10"/>
+                    <Insets left="20" right="10" />
                 </HBox.margin>
             </TextField>
 
             <ChoiceBox fx:id="filterStatus" prefWidth="130">
                 <HBox.margin>
-                    <Insets right="10"/>
+                    <Insets right="10" />
                 </HBox.margin>
             </ChoiceBox>
 
-            <Label fx:id="statusLabel" HBox.hgrow="ALWAYS" styleClass="status-label"/>
+            <Label fx:id="statusLabel" styleClass="status-label" HBox.hgrow="ALWAYS" />
+         <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="btn-primary" text="Login" textOverrun="WORD_ELLIPSIS" />
+         <Button mnemonicParsing="false" onAction="#handleRegister" styleClass="btn-primary" text="Register" textOverrun="LEADING_WORD_ELLIPSIS" />
+            <Label fx:id="currentUserLabel" text="Not logged in" styleClass="status-label"/>
+         <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="btn-danger" text="Logout" />
         </HBox>
     </top>
 
     <left>
-        <VBox styleClass="side-panel" prefWidth="450">
-            <Label text="Tasks" styleClass="panel-title">
+        <VBox prefWidth="450" styleClass="side-panel">
+            <Label styleClass="panel-title" text="Tasks">
                 <VBox.margin>
-                    <Insets bottom="10"/>
+                    <Insets bottom="10" />
                 </VBox.margin>
             </Label>
 
-            <ProgressBar fx:id="progressBar" prefWidth="430"
-                         visible="false" managed="false">
+            <ProgressBar fx:id="progressBar" managed="false" prefWidth="430" visible="false">
                 <VBox.margin>
-                    <Insets bottom="10"/>
+                    <Insets bottom="10" />
                 </VBox.margin>
             </ProgressBar>
-            <Label fx:id="progressLabel" styleClass="progress-label"
-                   visible="false" managed="false"/>
+            <Label fx:id="progressLabel" managed="false" styleClass="progress-label" visible="false" />
 
             <TableView fx:id="taskTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                    <TableColumn fx:id="textColumn" text="Task" prefWidth="150"/>
-                    <TableColumn fx:id="priorityColumn" text="Priority" prefWidth="75"/>
-                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="85"/>
-                    <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="85"/>
-                    <TableColumn fx:id="assigneeColumn" text="Assignee" prefWidth="80"/>
+                    <TableColumn fx:id="idColumn" prefWidth="50" text="ID" />
+                    <TableColumn fx:id="textColumn" prefWidth="150" text="Task" />
+                    <TableColumn fx:id="priorityColumn" prefWidth="75" text="Priority" />
+                    <TableColumn fx:id="statusColumn" prefWidth="85" text="Status" />
+                    <TableColumn fx:id="deadlineColumn" prefWidth="85" text="Deadline" />
+                    <TableColumn fx:id="assigneeColumn" prefWidth="80" text="Assignee" />
                 </columns>
             </TableView>
         </VBox>
@@ -66,53 +63,68 @@
 
     <center>
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
-            <VBox styleClass="detail-panel" spacing="15">
+            <VBox spacing="15" styleClass="detail-panel">
                 <padding>
-                    <Insets top="20" right="20" bottom="20" left="20"/>
+                    <Insets bottom="20" left="20" right="20" top="20" />
                 </padding>
 
-                <Label text="Task Details" styleClass="detail-title"/>
+                <Label styleClass="detail-title" text="Task Details" />
 
-                <GridPane hgap="15" vgap="10" styleClass="detail-grid">
-                    <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <GridPane hgap="15" styleClass="detail-grid" vgap="10">
+                    <Label styleClass="field-label" text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="detailId" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                    <Label text="Text:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailText" GridPane.rowIndex="1" GridPane.columnIndex="1" wrapText="true"/>
+                    <Label styleClass="field-label" text="Text:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="detailText" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                    <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailStatus" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Status:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label fx:id="detailStatus" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                    <Label text="Priority:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailPriority" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Priority:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label fx:id="detailPriority" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                    <Label text="Deadline:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailDeadline" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Deadline:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <Label fx:id="detailDeadline" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                    <Label text="Assignee:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailAssignee" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Assignee:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                    <Label fx:id="detailAssignee" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                    <Label text="Owner:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailOwner" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Owner:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                    <Label fx:id="detailOwner" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-                    <Label text="Created:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailCreated" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Created:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                    <Label fx:id="detailCreated" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-                    <Label text="Updated:" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="field-label"/>
-                    <Label fx:id="detailUpdated" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                    <Label styleClass="field-label" text="Updated:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                    <Label fx:id="detailUpdated" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
 
-                <Separator/>
+                <Separator />
 
                 <VBox spacing="10">
-                    <Label text="Checklist" styleClass="section-title"/>
-                    <ListView fx:id="checklistView" prefHeight="180"/>
+                    <Label styleClass="section-title" text="Checklist" />
+                    <ListView fx:id="checklistView" prefHeight="180" />
 
                     <HBox spacing="10">
-                        <Button text="Toggle" onAction="#handleToggleChecklist"/>
-                        <Button text="Add Item" onAction="#handleAddChecklist"/>
-                        <Button text="Edit" onAction="#handleEditTask"/>
-                        <Button text="Delete Task" onAction="#handleDeleteTask" styleClass="btn-danger"/>
+                        <Button onAction="#handleToggleChecklist" text="Toggle" />
+                        <Button onAction="#handleAddChecklist" text="Add Item" />
+                        <Button onAction="#handleEditTask" text="Edit" />
+                        <Button onAction="#handleDeleteTask" styleClass="btn-danger" text="Delete Task" />
                     </HBox>
                 </VBox>
             </VBox>
@@ -120,15 +132,15 @@
     </center>
 
     <bottom>
-        <HBox styleClass="status-bar" alignment="CENTER_LEFT">
-            <Label fx:id="statusBarText" text="Ready"/>
-            <Label styleClass="separator" text="|"/>
-            <Label text="Tasks:"/>
-            <Label fx:id="taskCount" styleClass="count-label" text="0"/>
-            <Label styleClass="separator" text="|"/>
-            <Label fx:id="lastRefresh" text="-"/>
-            <Label HBox.hgrow="ALWAYS"/>
-            <Label text="Task Manager v1.0" styleClass="version-label"/>
+        <HBox alignment="CENTER_LEFT" styleClass="status-bar">
+            <Label fx:id="statusBarText" text="Ready" />
+            <Label styleClass="separator" text="|" />
+            <Label text="Tasks:" />
+            <Label fx:id="taskCount" styleClass="count-label" text="0" />
+            <Label styleClass="separator" text="|" />
+            <Label fx:id="lastRefresh" text="-" />
+            <Label HBox.hgrow="ALWAYS" />
+            <Label styleClass="version-label" text="Task Manager v1.0" />
         </HBox>
     </bottom>
 </BorderPane>
