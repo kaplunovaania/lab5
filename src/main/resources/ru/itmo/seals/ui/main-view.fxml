@@ -124,8 +124,8 @@
                     <HBox spacing="10">
                         <Button onAction="#handleToggleChecklist" text="Toggle" />
                         <Button onAction="#handleAddChecklist" text="Add Item" />
-                        <Button onAction="#handleEditTask" text="Edit" />
-                        <Button onAction="#handleDeleteTask" styleClass="btn-danger" text="Delete Task" />
+                        <Button fx:id="editButton" onAction="#handleEditTask" text="Edit" />
+                        <Button fx:id="deleteButton" onAction="#handleDeleteTask" styleClass="btn-danger" text="Delete Task" />
                     </HBox>
                 </VBox>
             </VBox>

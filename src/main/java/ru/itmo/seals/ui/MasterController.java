@@ -183,6 +183,8 @@ public class MasterController {
         }
 
         loadChecklist(task);
+
+        updateActionButtons();
     }
 
     private void loadChecklist(Task task) {
@@ -611,6 +613,7 @@ public class MasterController {
             if (success) {
                 updateCurrentUserLabel();
                 statusBarText.setText("Logged in successfully");
+                updateActionButtons();
             } else {
                 statusBarText.setText("Login failed");
                 showError("Login Error", "Invalid login or password");
@@ -688,7 +691,25 @@ public class MasterController {
         if (userService != null) {
             userService.logout();
             updateCurrentUserLabel();
+            updateActionButtons();
             statusBarText.setText("Logged out");
+        }
+    }
+
+    private void updateActionButtons() {
+        if (selectedTask == null) {
+            if (editButton != null) editButton.setDisable(true);
+            if (deleteButton != null) deleteButton.setDisable(true);
+            return;
+        }
+
+        boolean isOwner = (userService != null && selectedTask.getOwnerId() == userService.getCurrentUserId());
+
+        if (editButton != null) {
+            editButton.setDisable(!isOwner);
+        }
+        if (deleteButton != null) {
+            deleteButton.setDisable(!isOwner);
         }
     }
 }
