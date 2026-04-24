@@ -1,47 +1,82 @@
 package ru.itmo.seals.service;
 
 import ru.itmo.seals.model.Task;
+import ru.itmo.seals.storage.DatabaseStorage;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskCollectionManager {
-    private final TreeMap<Long, Task> taskCollection = new TreeMap<>();
+    private final Map<Long, Task> taskCollection = new HashMap<>();
+    private DatabaseStorage dbStorage;
 
-    public void addTask(Task task) {
-        for (Task t : taskCollection.values()) {
-            if (t.getId() == task.getId()) {
-                throw new IllegalArgumentException("Задание с id " + task.getId() + " уже существует");
+    public void setDatabaseStorage(DatabaseStorage dbStorage) {
+        this.dbStorage = dbStorage;
+    }
+
+    // Загрузка из БД при старте
+    public void loadFromDatabase() {
+        if (dbStorage == null) return;
+        List<Task> tasks = dbStorage.loadAllTasks();
+        taskCollection.clear();
+        for (Task task : tasks) {
+            taskCollection.put(task.getId(), task);
+        }
+        System.out.println("Loaded " + taskCollection.size() + " tasks from database");
+    }
+
+    public long addTask(Task task) {
+        if (dbStorage != null) {
+            long dbId = dbStorage.saveTask(task);
+            if (dbId > 0) {
+                taskCollection.put(dbId, task);
+                return dbId;
             }
         }
-        taskCollection.put(task.getId(), task);
+        // Fallback to in-memory only
+        long id = taskCollection.isEmpty() ? 1 : taskCollection.keySet().stream().max(Long::compare).get() + 1;
+        taskCollection.put(id, task);
+        return id;
     }
 
-    public long getTaskNextId() {
-        return taskCollection.size();
+    public boolean updateTask(Task task) {
+        if (dbStorage != null) {
+            if (dbStorage.updateTask(task)) {
+                taskCollection.put(task.getId(), task);
+                return true;
+            }
+            return false;
+        }
+        if (taskCollection.containsKey(task.getId())) {
+            taskCollection.put(task.getId(), task);
+            return true;
+        }
+        return false;
     }
 
-    public List<Task> getTask() {
-        return Collections.unmodifiableList(new ArrayList<>(taskCollection.values()));
+    public boolean remove(long id, long ownerId) {
+        if (dbStorage != null) {
+            if (dbStorage.deleteTask(id, ownerId)) {
+                taskCollection.remove(id);
+                return true;
+            }
+            return false;
+        }
+        Task task = taskCollection.get(id);
+        if (task != null && task.getOwnerId() == ownerId) {
+            taskCollection.remove(id);
+            return true;
+        }
+        return false;
     }
 
-    public Task getById(long id) {
-        return taskCollection.get(id);
+    // === GETTERS ===
+    public Task getById(long id) { return taskCollection.get(id); }
+    public List<Task> getAll() { return new ArrayList<>(taskCollection.values()); }
+    public List<Task> getByOwnerId(long ownerId) {
+        return taskCollection.values().stream()
+                .filter(t -> t.getOwnerId() == ownerId)
+                .collect(Collectors.toList());
     }
-
-    public List<Task> getAll() {
-        return new ArrayList<>(taskCollection.values());
-    }
-
-    public boolean remove(long id) {
-        return taskCollection.remove(id) != null;
-    }
-
-    public void clear() {
-        taskCollection.clear();
-    }
-
-    public void update(long id, String newText) {
-        Task task = getById(id);
-        if (task == null) throw new NoSuchElementException("Нет задания с таким id");
-        task.setText(newText);
-    }
+    public void clear() { taskCollection.clear(); }
 }

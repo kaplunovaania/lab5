@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Database config (contains passwords)
+database.cfg
+src/main/resources/database.cfg

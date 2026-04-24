@@ -41,6 +41,7 @@ public class MasterController {
     @FXML private TableColumn<Task, String> statusColumn;
     @FXML private TableColumn<Task, String> deadlineColumn;
     @FXML private TableColumn<Task, String> assigneeColumn;
+    @FXML private TableColumn<Task, String> ownerColumn;
 
     @FXML private Label detailId;
     @FXML private Label detailText;
@@ -64,6 +65,9 @@ public class MasterController {
 
     @FXML private ProgressBar progressBar;
     @FXML private Label progressLabel;
+
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
 
     private TaskCollectionManager taskManager;
     private ChecklistCollectionManager checklistManager;
@@ -132,6 +136,11 @@ public class MasterController {
             Task task = cellData.getValue();
             String assignee = task.getAssigneeUsername();
             return new javafx.beans.property.SimpleStringProperty(assignee != null ? assignee : "-");
+        });
+
+        ownerColumn.setCellValueFactory(cellData -> {
+            Task task = cellData.getValue();
+            return new javafx.beans.property.SimpleStringProperty("ID:" + task.getOwnerId());
         });
 
         taskTable.setItems(taskList);
