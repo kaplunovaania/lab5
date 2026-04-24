@@ -285,7 +285,7 @@ public class MasterController {
                 }
 
                 return new ru.itmo.seals.model.Task(
-                        taskManager.getTaskNextId(),
+                        0,
                         text.getText().trim(),
                         priority.getValue(),
                         TaskStatus.NEW,
@@ -535,7 +535,7 @@ public class MasterController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            taskManager.remove(selectedTask.getId());
+            taskManager.remove(selectedTask.getId(), userService.getCurrentUserId());
             refreshData();
             clearDetails();
             statusBarText.setText("Task deleted");
