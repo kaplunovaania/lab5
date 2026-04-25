@@ -26,7 +26,6 @@ public class UserService {
             return false;
         }
 
-        // Проверка на существование
         if (findByLogin(login).isPresent()) {
             System.out.println("Ошибка: пользователь с таким логином уже существует");
             return false;
@@ -34,7 +33,7 @@ public class UserService {
 
         String sql = "INSERT INTO users (login, password_hash) VALUES (?, ?)";
         try (PreparedStatement stmt = db.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            User user = new User(0, login, password);  // id=0, будет сгенерирован
+            User user = new User(0, login, password);
 
             stmt.setString(1, user.getLogin());
             stmt.setString(2, user.getPasswordHash());
@@ -84,7 +83,7 @@ public class UserService {
                             rs.getLong("id"),
                             rs.getString("login"),
                             rs.getString("password_hash"),
-                            true  // already hashed
+                            true
                     );
                     return Optional.of(user);
                 }
@@ -107,13 +106,11 @@ public class UserService {
     public long getCurrentUserId() { return currentUser != null ? currentUser.getId() : -1; }
     public String getCurrentUserLogin() { return currentUser != null ? currentUser.getLogin() : "anonym"; }
 
-    // Проверка: текущий пользователь имеет доступ к задаче
     public boolean hasTaskAccess(Task task) {
         if (currentUser == null) {
             return false;
         }
 
-        // Владелец ИЛИ назначенный
         boolean isOwner = task.getOwnerId() == currentUser.getId();
         boolean isAssignee = task.getAssigneeUsername() != null &&
                 task.getAssigneeUsername().equals(currentUser.getLogin());
@@ -121,12 +118,10 @@ public class UserService {
         return isOwner || isAssignee;
     }
 
-    // Проверка: текущий пользователь может удалить задачу
     public boolean canDeleteTask(Task task) {
         if (currentUser == null) {
             return false;
         }
-        // Только владелец может удалять
         return task.getOwnerId() == currentUser.getId();
     }
 }
