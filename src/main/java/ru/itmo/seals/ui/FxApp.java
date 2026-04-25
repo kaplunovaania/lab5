@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ru.itmo.seals.service.UserService;
+import ru.itmo.seals.storage.*;
+import javafx.application.Platform;
 
 import ru.itmo.seals.service.*;
 import ru.itmo.seals.storage.*;
@@ -94,6 +97,7 @@ public class FxApp extends Application {
 
         } catch (Exception e) {
             System.err.println("Error showing login: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

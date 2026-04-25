@@ -1,27 +1,43 @@
 package ru.itmo.seals;
 
-import ru.itmo.seals.service.TaskCollectionManager;
-import ru.itmo.seals.service.ChecklistCollectionManager;
+import ru.itmo.seals.service.*;
+import ru.itmo.seals.storage.*;
 import ru.itmo.seals.command.*;
-import ru.itmo.seals.storage.FileStorage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import ru.itmo.seals.service.UserService;
-
 
 public class Main {
     public static void main(String[] args) {
+        DatabaseManager dbManager = new DatabaseManager();
+        if (!dbManager.connect()) {
+            System.out.println("Ошибка подключения к базе данных!");
+            System.out.println("Проверьте настройки в database.cfg");
+            return;
+        }
+
+        if (!dbManager.initializeSchema()) {
+            System.out.println("Ошибка инициализации схемы БД!");
+            return;
+        }
+
+        DatabaseStorage dbStorage = new DatabaseStorage(dbManager);
+
         TaskCollectionManager taskManager = new TaskCollectionManager();
         ChecklistCollectionManager checklistManager = new ChecklistCollectionManager();
-        FileStorage storage = new FileStorage();
-        UserService userService = new UserService("users.json");
+
+
+        UserService userService = new UserService(dbManager);
+
+        taskManager.setDatabaseStorage(dbStorage);
+        taskManager.loadFromDatabase();
 
         if (args.length > 0) {
             System.out.println("Загрузка из " + args[0]);
-            storage.load(args[0], taskManager, checklistManager);
+            // storage.load(args[0], taskManager, checklistManager);  ← Закомментируй
         }
+
         Scanner scanner = new Scanner(System.in);
 
         Map<String, Command> commands = new HashMap<>();
@@ -50,6 +66,7 @@ public class Main {
             if (input.isEmpty()) continue;
             if (input.equals("exit")) {
                 System.out.println("Выход.");
+                dbManager.close();
                 break;
             }
             if (input.equals("help")) {
@@ -69,7 +86,7 @@ public class Main {
                 try {
                     command.execute(cmdArgs, scanner);
                 } catch (Exception e) {
-                    System.out.println("Oшибка: " + e.getMessage());
+                    System.out.println("Ошибка: " + e.getMessage());
                 }
             } else {
                 System.out.println("Неизвестная команда: " + cmdName);
@@ -81,7 +98,7 @@ public class Main {
     private static void printHelp() {
         System.out.println("""
         Команды:
-        task_add [текст] [приоритет] [дедлайн (ГГГГ-ММ-ЧЧ]    - Создать новую задачу
+        task_add [текст] [приоритет] [дедлайн (ГГГГ-ММ-ЧЧ)]    - Создать новую задачу
         task_list                                             - Показать список всех задач
         task_show <id>                                        - Показать детали задачи
         task_update <id> <поле>=<значение>                    - Изменить поле задачи
@@ -93,11 +110,11 @@ public class Main {
         check_toggle <item_id>                                - Переключить статус пункта
         save <путь>                                           - Сохранить данные в файл JSON
         load <путь>                                           - Загрузить данные из файла JSON
-        help                                                  - Показать помощь
-        exit                                                  - Выход из программы
         register <login> <password>                           - Регистрация нового пользователя
         login <login> <password>                              - Вход в систему
-        logout                                               1 - Выход из системы
+        logout                                                - Выход из системы
+        help                                                  - Показать помощь
+        exit                                                  - Выход из программы
         """);
     }
 }

@@ -11,17 +11,13 @@ public class DatabaseManager implements AutoCloseable {
 
     public boolean connect() {
         try {
-            Class.forName(DatabaseConfig.getDriver());
+            // SQLite драйвер загружается автоматически
             connection = DriverManager.getConnection(
-                    DatabaseConfig.getUrl(),
-                    DatabaseConfig.getUsername(),
-                    DatabaseConfig.getPassword()
+                    DatabaseConfig.getUrl()
+                    // SQLite не требует username/password
             );
-            System.out.println("Connected to PostgreSQL!");
+            System.out.println("Connected to SQLite!");
             return true;
-        } catch (ClassNotFoundException e) {
-            System.err.println("PostgreSQL driver not found: " + e.getMessage());
-            return false;
         } catch (SQLException e) {
             System.err.println("Database connection failed: " + e.getMessage());
             return false;

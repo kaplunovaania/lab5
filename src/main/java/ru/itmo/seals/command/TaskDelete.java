@@ -38,7 +38,7 @@ public class TaskDelete extends Command {
                 return;
             }
 
-            boolean removed = taskManager.remove(taskId);
+            boolean removed = taskManager.remove(taskId, userService.getCurrentUserId());
             if (removed) {
                 System.out.println("OK deleted");
             } else {

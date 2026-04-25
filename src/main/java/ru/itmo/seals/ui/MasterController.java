@@ -19,6 +19,7 @@ import ru.itmo.seals.model.TaskStatus;
 import ru.itmo.seals.service.TaskCollectionManager;
 import ru.itmo.seals.service.ChecklistCollectionManager;
 import ru.itmo.seals.service.UserService;
+import ru.itmo.seals.storage.DatabaseStorage;
 import ru.itmo.seals.storage.FileStorage;
 
 import java.io.File;
@@ -71,7 +72,7 @@ public class MasterController {
 
     private TaskCollectionManager taskManager;
     private ChecklistCollectionManager checklistManager;
-    private FileStorage storage;
+    private DatabaseStorage storage;
     private UserService userService;
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
@@ -91,7 +92,7 @@ public class MasterController {
 
     public void init(TaskCollectionManager taskManager,
                      ChecklistCollectionManager checklistManager,
-                     FileStorage storage,
+                     DatabaseStorage storage,
                      UserService userService) {
         this.taskManager = taskManager;
         this.checklistManager = checklistManager;
@@ -407,61 +408,27 @@ public class MasterController {
 
     @FXML
     private void handleSave() {
-        FileChooser fc = new FileChooser();
-        fc.setInitialFileName("data.json");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Save");
+        alert.setHeaderText(null);
+        alert.setContentText("All changes are automatically saved to database");
+        alert.showAndWait();
 
-        File f = fc.showSaveDialog(taskTable.getScene().getWindow());
-        if (f != null) {
-            try {
-                storage.save(f.getAbsolutePath(), taskManager, checklistManager);
-                statusBarText.setText("Saved: " + f.getName());
-            } catch (IOException e) {
-                showError("Save error", e.getMessage());
-            }
-        }
+        statusBarText.setText("Data auto-saved to database");
     }
 
     @FXML
     private void handleLoad() {
-        FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
+        statusBarText.setText("Data loaded from database at startup");
+        refreshData();
 
-        File f = fc.showOpenDialog(taskTable.getScene().getWindow());
-        if (f != null) {
-            progressBar.setVisible(true);
-            progressBar.setManaged(true);
-            progressLabel.setVisible(true);
-            progressLabel.setManaged(true);
-            progressLabel.setText("Loading " + f.getName() + "...");
-
-            javafx.concurrent.Task<Void> loadTask = new javafx.concurrent.Task<>() {
-                @Override
-                protected Void call() {
-                    storage.load(f.getAbsolutePath(), taskManager, checklistManager);
-                    return null;
-                }
-            };
-
-            loadTask.setOnSucceeded(e -> Platform.runLater(() -> {
-                progressBar.setVisible(false);
-                progressBar.setManaged(false);
-                progressLabel.setVisible(false);
-                progressLabel.setManaged(false);
-                refreshData();
-                statusBarText.setText("Loaded: " + f.getName());
-            }));
-
-            loadTask.setOnFailed(e -> Platform.runLater(() -> {
-                progressBar.setVisible(false);
-                progressBar.setManaged(false);
-                progressLabel.setVisible(false);
-                progressLabel.setManaged(false);
-                showError("Load error", "Failed to load file");
-            }));
-
-            new Thread(loadTask).start();
-        }
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Load");
+        alert.setHeaderText(null);
+        alert.setContentText("Data was loaded from database when application started");
+        alert.showAndWait();
     }
 
     @FXML

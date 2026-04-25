@@ -12,7 +12,6 @@ public class DatabaseConfig {
                 .getResourceAsStream("database.cfg")) {
             if (input == null) {
                 System.err.println("Config file 'database.cfg' not found!");
-                return;
             }
             props.load(input);
         } catch (IOException e) {
