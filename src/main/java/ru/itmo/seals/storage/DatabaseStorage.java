@@ -92,13 +92,15 @@ public class DatabaseStorage {
         }
     }
 
-    public boolean updateTask(Task task) {
+    public boolean updateTask(Task task, long userId) {
+        // Разрешаем update если пользователь владелец ИЛИ назначенный
         String sql = """
-            UPDATE tasks SET 
-            text = ?, priority = ?, status = ?, deadline_at = ?, 
-            assignee_username = ?, updated_at = ?
-            WHERE id = ? AND owner_id = ?
-            """;
+        UPDATE tasks SET 
+        text = ?, priority = ?, status = ?, deadline_at = ?, 
+        assignee_username = ?, updated_at = ?
+        WHERE id = ? 
+        AND (owner_id = ? OR assignee_username = (SELECT login FROM users WHERE id = ?))
+        """;
 
         try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setString(1, task.getText());
@@ -114,13 +116,16 @@ public class DatabaseStorage {
             stmt.setString(5, task.getAssigneeUsername());
             stmt.setTimestamp(6, Timestamp.from(task.getUpdatedAt()));
             stmt.setLong(7, task.getId());
-            stmt.setLong(8, task.getOwnerId());  // Проверка прав на уровне БД
+            stmt.setLong(8, userId);  // owner_id
+            stmt.setLong(9, userId);  // для проверки assignee
 
             int rows = stmt.executeUpdate();
+            System.out.println("[DB] UpdateTask: rows affected = " + rows);
             return rows > 0;
 
         } catch (SQLException e) {
-            db.handleSqlError(e, "Update task");
+            System.out.println("[DB] UpdateTask error: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

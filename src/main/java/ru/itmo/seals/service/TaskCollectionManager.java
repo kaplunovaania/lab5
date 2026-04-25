@@ -39,29 +39,44 @@ public class TaskCollectionManager {
         return id;
     }
 
-    public boolean updateTask(Task task) {
+    public boolean updateTask(Task task, long userId) {
         if (dbStorage != null) {
-            if (dbStorage.updateTask(task)) {
+            // Для БД просто сохраняем (проверка прав будет в SQL)
+            if (dbStorage.updateTask(task, userId)) {
                 taskCollection.put(task.getId(), task);
                 return true;
             }
             return false;
         }
-        if (taskCollection.containsKey(task.getId())) {
+
+        // Проверка прав в памяти (без userService!)
+        Task existing = taskCollection.get(task.getId());
+        if (existing != null &&
+                (existing.getOwnerId() == userId ||
+                        (existing.getAssigneeUsername() != null &&
+                                existing.getAssigneeUsername().equals(getUserLoginById(userId))))) {  // ← Новый метод
             taskCollection.put(task.getId(), task);
             return true;
         }
         return false;
     }
 
+    // Вспомогательный метод для получения логина (заглушка)
+    private String getUserLoginById(long userId) {
+        // Для простоты возвращаем пустую строку
+        // В реальной системе тут был бы запрос к UserService
+        return "";
+    }
+
     public boolean remove(long id, long ownerId) {
         if (dbStorage != null) {
-            if (dbStorage.deleteTask(id, ownerId)) {
+            if (dbStorage.deleteTask(id, ownerId)) {  // ← Только владелец
                 taskCollection.remove(id);
                 return true;
             }
             return false;
         }
+
         Task task = taskCollection.get(id);
         if (task != null && task.getOwnerId() == ownerId) {
             taskCollection.remove(id);

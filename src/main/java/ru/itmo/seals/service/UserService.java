@@ -6,6 +6,8 @@ import ru.itmo.seals.storage.DatabaseManager;
 import java.sql.*;
 import java.util.Optional;
 
+import ru.itmo.seals.model.Task;
+
 public class UserService {
     private final DatabaseManager db;
     private User currentUser;
@@ -104,4 +106,27 @@ public class UserService {
     public User getCurrentUser() { return currentUser; }
     public long getCurrentUserId() { return currentUser != null ? currentUser.getId() : -1; }
     public String getCurrentUserLogin() { return currentUser != null ? currentUser.getLogin() : "anonym"; }
+
+    // Проверка: текущий пользователь имеет доступ к задаче
+    public boolean hasTaskAccess(Task task) {
+        if (currentUser == null) {
+            return false;
+        }
+
+        // Владелец ИЛИ назначенный
+        boolean isOwner = task.getOwnerId() == currentUser.getId();
+        boolean isAssignee = task.getAssigneeUsername() != null &&
+                task.getAssigneeUsername().equals(currentUser.getLogin());
+
+        return isOwner || isAssignee;
+    }
+
+    // Проверка: текущий пользователь может удалить задачу
+    public boolean canDeleteTask(Task task) {
+        if (currentUser == null) {
+            return false;
+        }
+        // Только владелец может удалять
+        return task.getOwnerId() == currentUser.getId();
+    }
 }

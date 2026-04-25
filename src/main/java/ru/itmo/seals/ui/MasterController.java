@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;      // ← ← ← ДОБАВЬ ЭТО!
 import java.util.List;
 import java.util.Optional;
 
@@ -231,13 +232,47 @@ public class MasterController {
     }
 
     private void refreshData() {
+        // Получаем текущего пользователя
+        long myUserId = userService.getCurrentUserId();
+        String myLogin = userService.getCurrentUserLogin();
+
+        System.out.println("[Filter] Current user: " + myLogin + " (id=" + myUserId + ")");
+
+        // 1. Очищаем таблицу
         taskList.clear();
-        taskList.addAll(taskManager.getAll());
+        System.out.println("[Filter] taskList cleared");
+
+        // 2. Получаем все задачи из памяти
+        List<Task> allTasks = taskManager.getAll();
+        System.out.println("[Filter] Total tasks in memory: " + allTasks.size());
+
+        // 3. Фильтруем
+        List<Task> visibleTasks = new ArrayList<>();
+        for (Task task : allTasks) {
+            boolean isOwner = (task.getOwnerId() == myUserId);
+            boolean isAssignee = (task.getAssigneeUsername() != null &&
+                    task.getAssigneeUsername().equals(myLogin));
+
+            if (isOwner || isAssignee) {
+                visibleTasks.add(task);
+            }
+        }
+
+        System.out.println("[Filter] Visible tasks: " + visibleTasks.size());
+
+        // 4. ← ← ← ВАЖНО: Добавляем в таблицу
+        taskList.addAll(visibleTasks);
+        System.out.println("[Filter] taskList updated with " + visibleTasks.size() + " tasks");
+
+        // 5. Применяем фильтры (поиск, статус)
         filterTasks();
 
-        taskCount.setText(String.valueOf(taskManager.getAll().size()));
+        // 6. Обновляем счётчики
+        taskCount.setText(String.valueOf(visibleTasks.size()));
         lastRefresh.setText("Last: " + java.time.LocalTime.now().toString().substring(0, 8));
-        statusBarText.setText("Updated");
+        statusBarText.setText("Showing " + visibleTasks.size() + " tasks");
+
+        System.out.println("[Filter] refreshData() completed");
     }
 
     @FXML
@@ -251,12 +286,15 @@ public class MasterController {
         String status = filterStatus != null && filterStatus.getValue() != null
                 ? filterStatus.getValue() : "All";
 
-        List<Task> filtered = taskManager.getAll().stream()
+        // ← ← ← ВАЖНО: Фильтруем ТОЛЬКО то что уже в taskList (не все задачи!)
+        List<Task> filtered = taskList.stream()  // ← ← ← taskList, НЕ taskManager.getAll()!
                 .filter(t -> t.getText().toLowerCase().contains(search))
                 .filter(t -> "All".equals(status) || t.getStatus().name().equals(status))
                 .toList();
 
         taskList.setAll(filtered);
+
+        System.out.println("[FilterTasks] After search/status filter: " + filtered.size() + " tasks");
     }
 
     @FXML
@@ -341,6 +379,11 @@ public class MasterController {
             return;
         }
 
+        if (!userService.hasTaskAccess(selectedTask)) {
+            showError("Access denied", "You don't have permission to edit this task");
+            return;
+        }
+
         Dialog<ru.itmo.seals.model.Task> dialog = new Dialog<>();
         dialog.setTitle("Edit Task");
         dialog.setHeaderText("Update task #" + selectedTask.getId());
@@ -414,7 +457,7 @@ public class MasterController {
         result.ifPresent(task -> {
             if (task != null) {
                 try {
-                    taskManager.updateTask(task);
+                    taskManager.updateTask(task, userService.getCurrentUserId());
                     refreshData();
                     showTaskDetails(selectedTask);
                     statusBarText.setText("Task updated");
@@ -515,6 +558,11 @@ public class MasterController {
     private void handleDeleteTask() {
         if (selectedTask == null) {
             showError("Select task", "Please select a task first");
+            return;
+        }
+
+        if (!userService.canDeleteTask(selectedTask)) {
+            showError("Access denied", "Only the owner can delete this task");
             return;
         }
 
@@ -689,19 +737,24 @@ public class MasterController {
     }
 
     private void updateActionButtons() {
-        if (selectedTask == null) {
+        if (selectedTask == null || userService == null) {
             if (editButton != null) editButton.setDisable(true);
             if (deleteButton != null) deleteButton.setDisable(true);
             return;
         }
 
-        boolean isOwner = (userService != null && selectedTask.getOwnerId() == userService.getCurrentUserId());
+        // Проверяем права
+        boolean hasAccess = userService.hasTaskAccess(selectedTask);
+        boolean canDelete = userService.canDeleteTask(selectedTask);
 
+        // Edit: владелец ИЛИ назначенный
         if (editButton != null) {
-            editButton.setDisable(!isOwner);
+            editButton.setDisable(!hasAccess);
         }
+
+        // Delete: только владелец
         if (deleteButton != null) {
-            deleteButton.setDisable(!isOwner);
+            deleteButton.setDisable(!canDelete);
         }
     }
 }
