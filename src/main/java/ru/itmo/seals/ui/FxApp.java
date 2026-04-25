@@ -45,6 +45,8 @@ public class FxApp extends Application {
         taskManager.setDatabaseStorage(dbStorage);
         // checklistManager.setDatabaseStorage(dbStorage); // аналогично
 
+        checklistManager.setDatabaseStorage(dbStorage);
+
         // 4. Загружаем данные в память
         taskManager.loadFromDatabase();
         // checklistManager.loadFromDatabase();

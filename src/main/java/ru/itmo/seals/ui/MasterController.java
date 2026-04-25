@@ -209,7 +209,25 @@ public class MasterController {
 
     @FXML
     private void handleRefresh() {
+        System.out.println("[Refresh] Starting full refresh...");
+
+        // Перезагрузка задач из БД
+        taskManager.loadFromDatabase();
+
+        // ← ← ← ДОБАВЬ ЭТО: Перезагрузка чеклистов из БД
+        checklistManager.loadFromDatabase();
+
+        // Обновление таблицы задач
         refreshData();
+
+        // ← ← ← ДОБАВЬ ЭТО: Обновление чеклиста для выбранной задачи
+        if (selectedTask != null) {
+            loadChecklist(selectedTask);  // Перечитать чеклист из менеджера
+            showTaskDetails(selectedTask);  // Обновить детали
+        }
+
+        statusBarText.setText("Reloaded from database");
+        System.out.println("[Refresh] Full refresh completed");
     }
 
     private void refreshData() {
@@ -396,6 +414,7 @@ public class MasterController {
         result.ifPresent(task -> {
             if (task != null) {
                 try {
+                    taskManager.updateTask(task);
                     refreshData();
                     showTaskDetails(selectedTask);
                     statusBarText.setText("Task updated");
@@ -444,7 +463,13 @@ public class MasterController {
             return;
         }
 
+        // Переключить статус
         selectedItem.setDone(!selectedItem.isDone());
+
+        // ← ← ← ДОБАВЬ ЭТО: Сохранить в БД
+        checklistManager.updateChecklist(selectedItem);
+
+        // Обновить отображение
         loadChecklist(selectedTask);
         statusBarText.setText("Item updated");
     }
@@ -473,7 +498,7 @@ public class MasterController {
                 }
 
                 Checklist item = new Checklist(
-                        checklistManager.getChecklistNextId(),
+                        0,
                         selectedTask.getId(),
                         text.trim()
                 );
