@@ -21,7 +21,7 @@ public class DatabaseConfig {
 
     public static String getUrl() {
         return props.getProperty("db.url",
-                System.getenv("DB_URL"));  // Fallback to env var
+                System.getenv("DB_URL"));
     }
 
     public static String getUsername() {

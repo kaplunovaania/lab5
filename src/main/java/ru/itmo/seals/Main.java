@@ -35,7 +35,6 @@ public class Main {
 
         if (args.length > 0) {
             System.out.println("Загрузка из " + args[0]);
-            // storage.load(args[0], taskManager, checklistManager);  ← Закомментируй
         }
 
         Scanner scanner = new Scanner(System.in);

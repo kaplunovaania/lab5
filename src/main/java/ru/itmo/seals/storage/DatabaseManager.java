@@ -11,10 +11,8 @@ public class DatabaseManager implements AutoCloseable {
 
     public boolean connect() {
         try {
-            // SQLite драйвер загружается автоматически
             connection = DriverManager.getConnection(
                     DatabaseConfig.getUrl()
-                    // SQLite не требует username/password
             );
             System.out.println("Connected to SQLite!");
             return true;
@@ -36,16 +34,13 @@ public class DatabaseManager implements AutoCloseable {
         return connection;
     }
 
-    // Выполняет инициализацию схемы
     public boolean initializeSchema() {
         try (Statement stmt = connection.createStatement()) {
-            // Читаем schema.sql из ресурсов
             String schema = new String(getClass()
                     .getClassLoader()
                     .getResourceAsStream("schema.sql")
                     .readAllBytes());
 
-            // Разделяем на отдельные запросы по ";"
             String[] queries = schema.split(";");
             for (String query : queries) {
                 if (!query.trim().isEmpty()) {
@@ -72,7 +67,6 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    // === ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ===
 
     public long insertAndGetId(PreparedStatement stmt) throws SQLException {
         stmt.executeUpdate();
@@ -87,13 +81,13 @@ public class DatabaseManager implements AutoCloseable {
     public boolean handleSqlError(SQLException e, String operation) {
         String sqlState = e.getSQLState();
         switch (sqlState) {
-            case "23505": // unique_violation
+            case "23505":
                 System.err.println(operation + ": duplicate entry");
                 break;
-            case "23503": // foreign_key_violation
+            case "23503":
                 System.err.println(operation + ": foreign key violation");
                 break;
-            case "08001": // connection_failure
+            case "08001":
                 System.err.println(operation + ": cannot connect to database");
                 break;
             default:

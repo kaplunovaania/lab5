@@ -60,11 +60,9 @@ public class ChecklistCollectionManager {
     }
 
     public long getChecklistNextId() {
-        // Для БД: возвращаем 0, база сгенерирует реальный ID
         if (dbStorage != null) {
             return 0;
         }
-        // Для памяти: генерируем следующий ID
         return checklistCollection.isEmpty() ? 1 : checklistCollection.lastKey() + 1;
     }
 
@@ -93,7 +91,6 @@ public class ChecklistCollectionManager {
     }
 
 
-    // Загрузка из БД
     public void loadFromDatabase() {
         if (dbStorage == null) {
             System.out.println("[ChecklistDB] dbStorage is null!");
@@ -103,7 +100,7 @@ public class ChecklistCollectionManager {
         System.out.println("[ChecklistDB] Loading checklists from database...");
         List<Checklist> checklists = dbStorage.loadAllChecklists();
 
-        checklistCollection.clear();  // ← Очистить перед загрузкой!
+        checklistCollection.clear();
 
         for (Checklist checklist : checklists) {
             checklistCollection.put(checklist.getId(), checklist);

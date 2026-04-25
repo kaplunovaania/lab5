@@ -23,41 +23,29 @@ public class FxApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // 1. Подключаемся к БД
         dbManager = new DatabaseManager();
         if (!dbManager.connect()) {
             showErrorAndExit("Не удалось подключиться к базе данных. Проверьте настройки и запустите PostgreSQL.");
             return;
         }
 
-        // 2. Инициализируем схему
         if (!dbManager.initializeSchema()) {
             showErrorAndExit("Не удалось инициализировать схему базы данных.");
             return;
         }
 
-        // 3. Создаём сервисы
         dbStorage = new DatabaseStorage(dbManager);
         taskManager = new TaskCollectionManager();
         checklistManager = new ChecklistCollectionManager();
         userService = new UserService(dbManager);
-
         taskManager.setDatabaseStorage(dbStorage);
-        // checklistManager.setDatabaseStorage(dbStorage); // аналогично
-
         checklistManager.setDatabaseStorage(dbStorage);
-
-        // 4. Загружаем данные в память
         taskManager.loadFromDatabase();
-        // checklistManager.loadFromDatabase();
-
-        // 5. Показываем окно авторизации
         if (!showLoginWindow(primaryStage)) {
             dbManager.close();
             return;
         }
 
-        // 6. Показываем основное окно
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ru/itmo/seals/ui/main-view.fxml"));
             Parent root = loader.load();

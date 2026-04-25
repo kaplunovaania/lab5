@@ -1,11 +1,11 @@
-/* общие стили */
+
 .root {
     -fx-background-color: #fce4ec;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
 }
 
-/* верхняя панель */
+
 .top-bar {
     -fx-background-color: linear-gradient(to right, #F06292, #EC407A);
     -fx-padding: 12 15;
@@ -40,7 +40,7 @@
     -fx-background-color: #C2185B;
 }
 
-/* боковая панель */
+
 .side-panel {
     -fx-background-color: white;
     -fx-border-color: #F8BBD9;
@@ -54,7 +54,7 @@
     -fx-padding: 15 15 5 15;
 }
 
-/* таблица */
+
 .table-view {
     -fx-background-color: white;
     -fx-border-color: transparent;
@@ -78,7 +78,7 @@
     -fx-text-fill: white;
 }
 
-/* детали */
+
 .detail-panel {
     -fx-background-color: white;
     -fx-background-radius: 10;
@@ -102,7 +102,7 @@
     -fx-text-fill: #C2185B;
 }
 
-/* поиск */
+
 .search-field {
     -fx-background-radius: 20;
     -fx-border-radius: 20;
@@ -116,7 +116,7 @@
     -fx-effect: dropshadow(gaussian, rgba(236, 64, 122, 0.3), 5, 0, 0, 0);
 }
 
-/* status bar */
+
 .status-bar {
     -fx-background-color: #880E4F;
     -fx-padding: 8 15;
@@ -146,7 +146,7 @@
     -fx-font-weight: bold;
 }
 
-/* прогресс бар */
+
 .progress-bar {
     -fx-accent: #EC407A;
 }

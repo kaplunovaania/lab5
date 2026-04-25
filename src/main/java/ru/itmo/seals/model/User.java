@@ -15,7 +15,6 @@ public final class User {
         this.passwordHash = hashPassword(password);
     }
 
-    // Для десериализации из JSON
     public User(long id, String login, String passwordHash, boolean isHashed) {
         this.id = id;
         this.login = login;

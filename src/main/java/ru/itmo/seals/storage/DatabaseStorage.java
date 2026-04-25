@@ -16,8 +16,6 @@ public class DatabaseStorage {
         this.db = db;
     }
 
-    // === ЗАГРУЗКА ДАННЫХ ИЗ БД ===
-
     public List<Task> loadAllTasks() {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks ORDER BY id";
@@ -52,8 +50,6 @@ public class DatabaseStorage {
         return checklists;
     }
 
-    // === СОХРАНЕНИЕ В БД ===
-
     public long saveTask(Task task) {
         String sql = """
             INSERT INTO tasks 
@@ -79,9 +75,7 @@ public class DatabaseStorage {
 
             long generatedId = db.insertAndGetId(stmt);
             if (generatedId > 0) {
-                // Обновляем ID в объекте (если был 0)
                 if (task.getId() == 0) {
-                    // Нужен сеттер или рефакторинг конструктора
                 }
             }
             return generatedId;
@@ -93,7 +87,6 @@ public class DatabaseStorage {
     }
 
     public boolean updateTask(Task task, long userId) {
-        // Разрешаем update если пользователь владелец ИЛИ назначенный
         String sql = """
         UPDATE tasks SET 
         text = ?, priority = ?, status = ?, deadline_at = ?, 
@@ -116,8 +109,8 @@ public class DatabaseStorage {
             stmt.setString(5, task.getAssigneeUsername());
             stmt.setTimestamp(6, Timestamp.from(task.getUpdatedAt()));
             stmt.setLong(7, task.getId());
-            stmt.setLong(8, userId);  // owner_id
-            stmt.setLong(9, userId);  // для проверки assignee
+            stmt.setLong(8, userId);
+            stmt.setLong(9, userId);
 
             int rows = stmt.executeUpdate();
             System.out.println("[DB] UpdateTask: rows affected = " + rows);
@@ -135,7 +128,7 @@ public class DatabaseStorage {
 
         try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setLong(1, taskId);
-            stmt.setLong(2, ownerId);  // Проверка прав
+            stmt.setLong(2, ownerId);
 
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -145,8 +138,6 @@ public class DatabaseStorage {
             return false;
         }
     }
-
-    // === ЧЕКЛИСТЫ ===
 
     public long saveChecklist(Checklist checklist) {
         String sql = """
@@ -218,8 +209,6 @@ public class DatabaseStorage {
         return result;
     }
 
-    // === МАППИНГ ===
-
     private Task mapTask(ResultSet rs) throws SQLException {
         return new Task(
                 rs.getLong("id"),
@@ -242,7 +231,6 @@ public class DatabaseStorage {
                 rs.getString("text")
         );
         c.setDone(rs.getBoolean("done"));
-        // createdAt/updatedAt уже установлены в конструкторе
         return c;
     }
 }

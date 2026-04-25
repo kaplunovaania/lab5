@@ -28,7 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;      // ← ← ← ДОБАВЬ ЭТО!
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -211,20 +211,14 @@ public class MasterController {
     @FXML
     private void handleRefresh() {
         System.out.println("[Refresh] Starting full refresh...");
-
-        // Перезагрузка задач из БД
         taskManager.loadFromDatabase();
-
-        // ← ← ← ДОБАВЬ ЭТО: Перезагрузка чеклистов из БД
         checklistManager.loadFromDatabase();
 
-        // Обновление таблицы задач
-        refreshData();
 
-        // ← ← ← ДОБАВЬ ЭТО: Обновление чеклиста для выбранной задачи
+        refreshData();
         if (selectedTask != null) {
-            loadChecklist(selectedTask);  // Перечитать чеклист из менеджера
-            showTaskDetails(selectedTask);  // Обновить детали
+            loadChecklist(selectedTask);
+            showTaskDetails(selectedTask);
         }
 
         statusBarText.setText("Reloaded from database");
@@ -232,21 +226,17 @@ public class MasterController {
     }
 
     private void refreshData() {
-        // Получаем текущего пользователя
         long myUserId = userService.getCurrentUserId();
         String myLogin = userService.getCurrentUserLogin();
 
         System.out.println("[Filter] Current user: " + myLogin + " (id=" + myUserId + ")");
 
-        // 1. Очищаем таблицу
         taskList.clear();
         System.out.println("[Filter] taskList cleared");
 
-        // 2. Получаем все задачи из памяти
         List<Task> allTasks = taskManager.getAll();
         System.out.println("[Filter] Total tasks in memory: " + allTasks.size());
 
-        // 3. Фильтруем
         List<Task> visibleTasks = new ArrayList<>();
         for (Task task : allTasks) {
             boolean isOwner = (task.getOwnerId() == myUserId);
@@ -260,14 +250,9 @@ public class MasterController {
 
         System.out.println("[Filter] Visible tasks: " + visibleTasks.size());
 
-        // 4. ← ← ← ВАЖНО: Добавляем в таблицу
         taskList.addAll(visibleTasks);
         System.out.println("[Filter] taskList updated with " + visibleTasks.size() + " tasks");
-
-        // 5. Применяем фильтры (поиск, статус)
         filterTasks();
-
-        // 6. Обновляем счётчики
         taskCount.setText(String.valueOf(visibleTasks.size()));
         lastRefresh.setText("Last: " + java.time.LocalTime.now().toString().substring(0, 8));
         statusBarText.setText("Showing " + visibleTasks.size() + " tasks");
@@ -286,8 +271,7 @@ public class MasterController {
         String status = filterStatus != null && filterStatus.getValue() != null
                 ? filterStatus.getValue() : "All";
 
-        // ← ← ← ВАЖНО: Фильтруем ТОЛЬКО то что уже в taskList (не все задачи!)
-        List<Task> filtered = taskList.stream()  // ← ← ← taskList, НЕ taskManager.getAll()!
+        List<Task> filtered = taskList.stream()
                 .filter(t -> t.getText().toLowerCase().contains(search))
                 .filter(t -> "All".equals(status) || t.getStatus().name().equals(status))
                 .toList();
@@ -506,13 +490,8 @@ public class MasterController {
             return;
         }
 
-        // Переключить статус
         selectedItem.setDone(!selectedItem.isDone());
-
-        // ← ← ← ДОБАВЬ ЭТО: Сохранить в БД
         checklistManager.updateChecklist(selectedItem);
-
-        // Обновить отображение
         loadChecklist(selectedTask);
         statusBarText.setText("Item updated");
     }
@@ -609,8 +588,8 @@ public class MasterController {
     private void handleLogin() {
         Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Login");
-        dialog.setHeaderText("Enter your credentials");  // ← ВАЖНО: заголовок!
-        dialog.initOwner(taskTable.getScene().getWindow());  // ← ВАЖНО: привязка к окну
+        dialog.setHeaderText("Enter your credentials");
+        dialog.initOwner(taskTable.getScene().getWindow());
 
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
@@ -743,16 +722,13 @@ public class MasterController {
             return;
         }
 
-        // Проверяем права
         boolean hasAccess = userService.hasTaskAccess(selectedTask);
         boolean canDelete = userService.canDeleteTask(selectedTask);
 
-        // Edit: владелец ИЛИ назначенный
         if (editButton != null) {
             editButton.setDisable(!hasAccess);
         }
 
-        // Delete: только владелец
         if (deleteButton != null) {
             deleteButton.setDisable(!canDelete);
         }
