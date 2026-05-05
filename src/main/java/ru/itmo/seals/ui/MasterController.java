@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import ru.itmo.seals.model.Task;
@@ -31,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javafx.scene.layout.*;
 
 public class MasterController {
 
@@ -71,6 +73,22 @@ public class MasterController {
     @FXML private Button editButton;
     @FXML private Button deleteButton;
 
+    @FXML private VBox statisticsPanel;
+    @FXML private Label statTotal;
+    @FXML private Label statNew;
+    @FXML private Label statInProgress;
+    @FXML private Label statDone;
+    @FXML private Label statHigh;
+    @FXML private Label statMedium;
+    @FXML private Label statLow;
+    @FXML private Label statOverdue;
+
+    @FXML private ChoiceBox<String> filterPriority;
+    @FXML private DatePicker filterDeadlineFrom;
+    @FXML private DatePicker filterDeadlineTo;
+    @FXML private TextField filterAssignee;
+    @FXML private HBox filterPanel;
+
     private TaskCollectionManager taskManager;
     private ChecklistCollectionManager checklistManager;
     private DatabaseStorage storage;
@@ -82,12 +100,13 @@ public class MasterController {
     @FXML
     private void initialize() {
         if (filterStatus != null) {
-            filterStatus.getItems().add("All");
-            filterStatus.getItems().add("NEW");
-            filterStatus.getItems().add("IN_PROGRESS");
-            filterStatus.getItems().add("DONE");
+            filterStatus.getItems().addAll("All", "NEW", "IN_PROGRESS", "DONE");
             filterStatus.setValue("All");
-            filterStatus.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> filterTasks());
+        }
+
+        if (filterPriority != null) {
+            filterPriority.getItems().addAll("All", "HIGH", "MEDIUM", "LOW");
+            filterPriority.setValue("All");
         }
     }
 
@@ -207,6 +226,26 @@ public class MasterController {
             }
         });
     }
+    @FXML
+    private void applyFilters() {
+        filterTasks();
+        filterPanel.setVisible(false);
+        filterPanel.setManaged(false);
+    }
+
+    @FXML
+    private void clearFilters() {
+        if (searchField != null) searchField.clear();
+        if (filterStatus != null) filterStatus.setValue("All");
+        if (filterPriority != null) filterPriority.setValue("All");
+        if (filterDeadlineFrom != null) filterDeadlineFrom.setValue(null);
+        if (filterDeadlineTo != null) filterDeadlineTo.setValue(null);
+        if (filterAssignee != null) filterAssignee.clear();
+
+        filterTasks();
+        filterPanel.setVisible(false);
+        filterPanel.setManaged(false);
+    }
 
     @FXML
     private void handleRefresh() {
@@ -258,6 +297,13 @@ public class MasterController {
         statusBarText.setText("Showing " + visibleTasks.size() + " tasks");
 
         System.out.println("[Filter] refreshData() completed");
+        updateStatistics();
+    }
+    @FXML
+    private void toggleFilterPanel() {
+        boolean isVisible = filterPanel.isVisible();
+        filterPanel.setVisible(!isVisible);
+        filterPanel.setManaged(!isVisible);
     }
 
     @FXML
@@ -266,19 +312,53 @@ public class MasterController {
     }
 
     private void filterTasks() {
-        String search = searchField != null && searchField.getText() != null
+        String searchText = searchField != null && searchField.getText() != null
                 ? searchField.getText().toLowerCase() : "";
-        String status = filterStatus != null && filterStatus.getValue() != null
+
+        String statusFilter = filterStatus != null && filterStatus.getValue() != null
                 ? filterStatus.getValue() : "All";
 
-        List<Task> filtered = taskList.stream()
-                .filter(t -> t.getText().toLowerCase().contains(search))
-                .filter(t -> "All".equals(status) || t.getStatus().name().equals(status))
+        String priorityFilter = filterPriority != null && filterPriority.getValue() != null
+                ? filterPriority.getValue() : "All";
+
+        LocalDate deadlineFrom = filterDeadlineFrom != null ? filterDeadlineFrom.getValue() : null;
+        LocalDate deadlineTo = filterDeadlineTo != null ? filterDeadlineTo.getValue() : null;
+
+        String assigneeFilter = filterAssignee != null && filterAssignee.getText() != null
+                ? filterAssignee.getText().toLowerCase() : "";
+
+        List<Task> filtered = taskManager.getAll().stream()
+                .filter(t -> t.getText().toLowerCase().contains(searchText))
+                .filter(t -> "All".equals(statusFilter) || t.getStatus().name().equals(statusFilter))
+                .filter(t -> "All".equals(priorityFilter) || t.getPriority().name().equals(priorityFilter))
+                .filter(t -> {
+                    if (deadlineFrom == null || t.getDeadlineAt() == null) return true;
+                    LocalDate taskDeadline = LocalDate.ofInstant(t.getDeadlineAt(), ZoneOffset.UTC);
+                    return !taskDeadline.isBefore(deadlineFrom);
+                })
+                .filter(t -> {
+                    if (deadlineTo == null || t.getDeadlineAt() == null) return true;
+                    LocalDate taskDeadline = LocalDate.ofInstant(t.getDeadlineAt(), ZoneOffset.UTC);
+                    return !taskDeadline.isAfter(deadlineTo);
+                })
+                .filter(t -> {
+                    if (assigneeFilter.isEmpty()) return true;
+                    String assignee = t.getAssigneeUsername() != null ? t.getAssigneeUsername().toLowerCase() : "";
+                    return assignee.contains(assigneeFilter);
+                })
+                .filter(t -> {
+                    long myUserId = userService.getCurrentUserId();
+                    String myLogin = userService.getCurrentUserLogin();
+
+                    boolean isOwner = (t.getOwnerId() == myUserId);
+                    boolean isAssignee = (t.getAssigneeUsername() != null &&
+                            t.getAssigneeUsername().equals(myLogin));
+
+                    return isOwner || isAssignee;
+                })
                 .toList();
 
         taskList.setAll(filtered);
-
-        System.out.println("[FilterTasks] After search/status filter: " + filtered.size() + " tasks");
     }
 
     @FXML
@@ -583,6 +663,34 @@ public class MasterController {
         alert.showAndWait();
     }
 
+    private void updateStatistics() {
+        List<Task> userTasks = taskList;
+
+        int total = userTasks.size();
+        statTotal.setText(String.valueOf(total));
+
+        long newCount = userTasks.stream().filter(t -> t.getStatus() == TaskStatus.NEW).count();
+        long inProgressCount = userTasks.stream().filter(t -> t.getStatus() == TaskStatus.IN_PROGRESS).count();
+        long doneCount = userTasks.stream().filter(t -> t.getStatus() == TaskStatus.DONE).count();
+
+        statNew.setText(String.valueOf(newCount));
+        statInProgress.setText(String.valueOf(inProgressCount));
+        statDone.setText(String.valueOf(doneCount));
+
+        long highCount = userTasks.stream().filter(t -> t.getPriority() == TaskPriority.HIGH).count();
+        long mediumCount = userTasks.stream().filter(t -> t.getPriority() == TaskPriority.MEDIUM).count();
+        long lowCount = userTasks.stream().filter(t -> t.getPriority() == TaskPriority.LOW).count();
+
+        statHigh.setText(String.valueOf(highCount));
+        statMedium.setText(String.valueOf(mediumCount));
+        statLow.setText(String.valueOf(lowCount));
+
+        long overdueCount = userTasks.stream()
+                .filter(t -> t.getDeadlineAt() != null && t.getDeadlineAt().isBefore(Instant.now()))
+                .count();
+
+        statOverdue.setText(String.valueOf(overdueCount));
+    }
 
     @FXML
     private void handleLogin() {
