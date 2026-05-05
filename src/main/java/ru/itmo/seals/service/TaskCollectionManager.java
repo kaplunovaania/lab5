@@ -14,7 +14,6 @@ public class TaskCollectionManager {
         this.dbStorage = dbStorage;
     }
 
-    // Загрузка из БД при старте
     public void loadFromDatabase() {
         if (dbStorage == null) return;
         List<Task> tasks = dbStorage.loadAllTasks();
@@ -33,7 +32,6 @@ public class TaskCollectionManager {
                 return dbId;
             }
         }
-        // Fallback to in-memory only
         long id = taskCollection.isEmpty() ? 1 : taskCollection.keySet().stream().max(Long::compare).get() + 1;
         taskCollection.put(id, task);
         return id;
@@ -41,7 +39,6 @@ public class TaskCollectionManager {
 
     public boolean updateTask(Task task, long userId) {
         if (dbStorage != null) {
-            // Для БД просто сохраняем (проверка прав будет в SQL)
             if (dbStorage.updateTask(task, userId)) {
                 taskCollection.put(task.getId(), task);
                 return true;
@@ -49,28 +46,24 @@ public class TaskCollectionManager {
             return false;
         }
 
-        // Проверка прав в памяти (без userService!)
         Task existing = taskCollection.get(task.getId());
         if (existing != null &&
                 (existing.getOwnerId() == userId ||
                         (existing.getAssigneeUsername() != null &&
-                                existing.getAssigneeUsername().equals(getUserLoginById(userId))))) {  // ← Новый метод
+                                existing.getAssigneeUsername().equals(getUserLoginById(userId))))) {
             taskCollection.put(task.getId(), task);
             return true;
         }
         return false;
     }
 
-    // Вспомогательный метод для получения логина (заглушка)
     private String getUserLoginById(long userId) {
-        // Для простоты возвращаем пустую строку
-        // В реальной системе тут был бы запрос к UserService
         return "";
     }
 
     public boolean remove(long id, long ownerId) {
         if (dbStorage != null) {
-            if (dbStorage.deleteTask(id, ownerId)) {  // ← Только владелец
+            if (dbStorage.deleteTask(id, ownerId)) {
                 taskCollection.remove(id);
                 return true;
             }
@@ -85,7 +78,6 @@ public class TaskCollectionManager {
         return false;
     }
 
-    // === GETTERS ===
     public Task getById(long id) { return taskCollection.get(id); }
     public List<Task> getAll() { return new ArrayList<>(taskCollection.values()); }
     public List<Task> getByOwnerId(long ownerId) {
