@@ -38,7 +38,7 @@ public class DatabaseManager implements AutoCloseable {
         try (Statement stmt = connection.createStatement()) {
             String schema = new String(getClass()
                     .getClassLoader()
-                    .getResourceAsStream("schema.sql")
+                    .getResourceAsStream("ru/itmo/seals/ui/schema.sql")
                     .readAllBytes());
 
             String[] queries = schema.split(";");

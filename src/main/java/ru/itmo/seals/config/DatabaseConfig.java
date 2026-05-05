@@ -9,7 +9,7 @@ public class DatabaseConfig {
 
     static {
         try (InputStream input = DatabaseConfig.class.getClassLoader()
-                .getResourceAsStream("database.cfg")) {
+                .getResourceAsStream("ru/itmo/seals/ui/database.cfg")) {
             if (input == null) {
                 System.err.println("Config file 'database.cfg' not found!");
             }
