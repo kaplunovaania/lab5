@@ -11,7 +11,6 @@ import ru.itmo.seals.storage.*;
 import javafx.application.Platform;
 
 import ru.itmo.seals.service.*;
-import ru.itmo.seals.storage.*;
 
 public class FxApp extends Application {
 
@@ -67,7 +66,7 @@ public class FxApp extends Application {
 
     private boolean showLoginWindow(Stage owner) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ru/itmo/seals/ui/login-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ru/itmo/seals/ui/Login-view.fxml"));
             Parent root = loader.load();
 
             LoginController controller = loader.getController();
